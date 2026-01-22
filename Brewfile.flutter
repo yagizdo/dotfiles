@@ -1,0 +1,7 @@
+# Flutter/Mobile Development
+brew "fvm"
+brew "cocoapods"
+brew "scrcpy"
+
+# Casks
+cask "minisim"

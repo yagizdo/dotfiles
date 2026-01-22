@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "defaultMode": "plan"
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "npx -y @owloops/claude-powerline@latest --theme=rose-pine --style=powerline"
+  },
+  "enabledPlugins": {
+    "context7@claude-plugins-official": true,
+    "compound-engineering@every-marketplace": true
+  }
+}

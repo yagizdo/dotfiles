@@ -1,0 +1,12 @@
+dart-code.dart-code
+dart-code.flutter
+felixangelov.bloc
+circlecodesolution.ccs-flutter-color
+jeroen-meijer.pubspec-assist
+catppuccin.catppuccin-vsc
+pkief.material-icon-theme
+eamodio.gitlens
+usernamehw.errorlens
+oderwat.indent-rainbow
+k--kato.intellij-idea-keybindings
+anthropic.claude-code
