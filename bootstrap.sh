@@ -74,6 +74,10 @@ mkdir -p $HOME/.claude
 rm -rf $HOME/.claude/settings.json
 ln -sf $HOME/.dotfiles/.claude/settings.json $HOME/.claude/settings.json
 
+# Git
+ln -sf $HOME/.dotfiles/git/.gitconfig $HOME/.gitconfig
+ln -sf $HOME/.dotfiles/git/.gitignore_global $HOME/.gitignore_global
+
 # FVM Setup
 echo "Setting up FVM..."
 if command -v fvm &> /dev/null; then
@@ -87,6 +91,7 @@ mkdir -p $HOME/workspace
 echo ""
 echo "Done! Next steps:"
 echo "1. Restart your shell: exec zsh"
-echo "2. Open tmux and press Ctrl+a I to install plugins"
-echo "3. Open Neovim - plugins will auto-install"
-echo "4. Set Warp theme: Settings > Appearance > Themes > catppuccin_mocha"
+echo "2. Setup SSH: ./ssh/ssh.sh your@email.com"
+echo "3. Open tmux and press Ctrl+a I to install plugins"
+echo "4. Open Neovim - plugins will auto-install"
+echo "5. Set Warp theme: Settings > Appearance > Themes > catppuccin_mocha"

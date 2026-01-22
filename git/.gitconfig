@@ -1,0 +1,33 @@
+[user]
+    # Set these with: git config --global user.name "Your Name"
+    #                 git config --global user.email "your@email.com"
+
+[init]
+    defaultBranch = main
+
+[pull]
+    rebase = false
+
+[core]
+    editor = vim
+    excludesfile = ~/.gitignore_global
+
+[alias]
+    st = status
+    co = checkout
+    br = branch
+    ci = commit
+    unstage = reset HEAD --
+    last = log -1 HEAD
+    lg = log --oneline --graph --decorate
+    branches = branch -a
+    remotes = remote -v
+
+[color]
+    ui = auto
+
+[push]
+    autoSetupRemote = true
+
+[fetch]
+    prune = true

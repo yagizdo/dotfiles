@@ -10,6 +10,7 @@ Personal dotfiles for Flutter/mobile development on macOS.
 - **Multiplexer**: Tmux with vim navigation
 - **Flutter**: FVM setup, CocoaPods, scrcpy
 - **AI**: Claude Code configuration
+- **Git**: SSH key setup, global gitconfig, gitignore
 
 ## Quick Start
 
@@ -32,6 +33,29 @@ chmod +x bootstrap.sh
    ```bash
    cat ~/.dotfiles/vscode/extensions.txt | xargs -L 1 code --install-extension
    ```
+
+## Git SSH Setup
+
+Generate SSH key:
+
+```bash
+./ssh/ssh.sh your@email.com
+```
+
+Copy and add to GitHub:
+
+```bash
+pbcopy < ~/.ssh/id_ed25519.pub
+# Add at: https://github.com/settings/ssh/new
+```
+
+Configure git and test:
+
+```bash
+git config --global user.name "Your Name"
+git config --global user.email "your@email.com"
+ssh -T git@github.com
+```
 
 ## File Structure
 
@@ -58,6 +82,11 @@ chmod +x bootstrap.sh
 │   └── theme.omp.json
 ├── .claude/            # Claude Code settings
 │   └── settings.json
+├── ssh/                # SSH key setup
+│   └── ssh.sh
+├── git/                # Git configuration
+│   ├── .gitconfig      # Global git config
+│   └── .gitignore_global
 ├── Brewfile            # Core packages
 ├── Brewfile.flutter    # Flutter packages
 ├── bootstrap.sh        # Setup script
