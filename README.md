@@ -33,6 +33,7 @@ chmod +x bootstrap.sh
    ```bash
    cat ~/.dotfiles/vscode/extensions.txt | xargs -L 1 code --install-extension
    ```
+   Or copy `vscode/extensions.json` to your project's `.vscode/` folder for recommendations.
 
 ## Git SSH Setup
 
@@ -77,6 +78,7 @@ ssh -T git@github.com
 │   └── lua/plugins/
 ├── vscode/             # VS Code settings
 │   ├── settings.json
+│   ├── extensions.json # Workspace recommendations
 │   └── extensions.txt
 ├── oh-my-posh/         # Prompt theme
 │   └── theme.omp.json
