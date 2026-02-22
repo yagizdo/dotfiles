@@ -1,5 +1,13 @@
 {
   "permissions": {
+    "allow": [
+      "Bash(*load_handover*)",
+      "Bash(*clear_last_handover*)",
+      "Bash(*clear_handovers*)",
+      "Bash(mkdir*handover*)",
+      "Write(*/.claude/handovers/*.md)",
+      "Edit(*/.claude/handovers/*.md)"
+    ],
     "defaultMode": "plan"
   },
   "statusLine": {
@@ -8,6 +16,9 @@
   },
   "enabledPlugins": {
     "context7@claude-plugins-official": true,
-    "compound-engineering@every-marketplace": true
+    "compound-engineering@every-marketplace": true,
+    "swift-lsp@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": true,
+    "xclaude-plugin@xclaude-plugin-marketplace": true
   }
 }
