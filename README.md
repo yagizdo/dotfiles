@@ -12,16 +12,52 @@ Personal dotfiles for Flutter/mobile development on macOS.
 - **AI**: Claude Code configuration
 - **Git**: SSH key setup, global gitconfig, gitignore
 
-## Quick Start
+## Clean Install
+
+On a fresh machine:
 
 ```bash
-# Clone to ~/.dotfiles
-git clone git@github.com:yagizdo/dotfiles.git ~/.dotfiles
+bash <(curl -sL https://raw.githubusercontent.com/yagizdo/dotfiles/master/install.sh)
+```
 
-# Run bootstrap
+Or manually:
+
+```bash
+git clone git@github.com:yagizdo/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 chmod +x bootstrap.sh
 ./bootstrap.sh
+```
+
+Use `--minimal` to skip interactive prompts and install core packages only:
+
+```bash
+./bootstrap.sh --minimal
+```
+
+## Local Configuration
+
+### Machine-specific shell config
+
+Add machine-specific settings to `~/.zshrc.local` (not tracked by git):
+
+```bash
+# Example ~/.zshrc.local
+export WORK_API_KEY="..."
+alias deploy="ssh deploy@work-server"
+```
+
+### Git credentials
+
+Git credentials are kept out of the repo via `~/.gitconfig.local`:
+
+```bash
+# Run the setup helper
+./git/setup-git.sh
+
+# Or manually
+git config --global user.name "Your Name"
+git config --global user.email "your@email.com"
 ```
 
 ## Manual Steps After Bootstrap
@@ -50,18 +86,10 @@ pbcopy < ~/.ssh/id_ed25519.pub
 # Add at: https://github.com/settings/ssh/new
 ```
 
-Configure git and test:
-
-```bash
-git config --global user.name "Your Name"
-git config --global user.email "your@email.com"
-ssh -T git@github.com
-```
-
 ## File Structure
 
 ```
-~/.dotfiles/
+dotfiles/
 ├── zsh/                # Shell configuration
 │   ├── .zshrc          # Main config with Zinit
 │   ├── .zprofile       # Homebrew init
@@ -87,11 +115,14 @@ ssh -T git@github.com
 ├── ssh/                # SSH key setup
 │   └── ssh.sh
 ├── git/                # Git configuration
-│   ├── .gitconfig      # Global git config
-│   └── .gitignore_global
+│   ├── .gitconfig      # Global git config (includes ~/.gitconfig.local)
+│   ├── .gitignore_global
+│   └── setup-git.sh    # Git credentials helper
 ├── Brewfile            # Core packages
 ├── Brewfile.flutter    # Flutter packages
-├── bootstrap.sh        # Setup script
+├── bootstrap.sh        # Main setup script
+├── install.sh          # One-liner entry point for fresh machines
+├── claude-code-setup.sh # Claude Code settings import
 └── README.md           # This file
 ```
 
@@ -121,10 +152,21 @@ ssh -T git@github.com
 | `vim` | `nvim` |
 | `ll` | `eza -l --icons` |
 
+## Troubleshooting
+
+### Symlinks not created
+Bootstrap backs up existing files to `~/.dotfiles-backup/`. Check that directory if something looks wrong.
+
+### Homebrew on Linux
+The bootstrap script auto-detects the OS and uses the correct Homebrew path (`/home/linuxbrew/.linuxbrew` on Linux).
+
+### Bootstrap from non-standard location
+The repo auto-detects its own location — you can clone it anywhere, not just `~/.dotfiles`.
+
 ## Updating
 
 ```bash
-cd ~/.dotfiles
+cd ~/.dotfiles  # or wherever you cloned it
 git pull
 ./bootstrap.sh
 ```

@@ -1,6 +1,9 @@
+[include]
+    path = ~/.gitconfig.local
+
 [user]
-    # Set these with: git config --global user.name "Your Name"
-    #                 git config --global user.email "your@email.com"
+    # Credentials loaded from ~/.gitconfig.local
+    # Run git/setup-git.sh to configure
 
 [init]
     defaultBranch = main

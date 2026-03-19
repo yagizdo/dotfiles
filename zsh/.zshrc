@@ -56,3 +56,21 @@ eval "$(zoxide init zsh)"
 source "$DOTFILES/zsh/aliases.zsh"
 source "$DOTFILES/zsh/path.zsh"
 source "$DOTFILES/zsh/exports.zsh"
+
+# ── Optional tool integrations ──
+
+# Antigravity
+if [ -d "$HOME/.antigravity" ]; then
+  export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
+fi
+
+# Dart CLI completion
+[[ -f "$HOME/.dart-cli-completion/zsh-config.zsh" ]] && . "$HOME/.dart-cli-completion/zsh-config.zsh" || true
+
+# Shorebird
+if [ -d "$HOME/.shorebird" ]; then
+  export PATH="$HOME/.shorebird/bin:$PATH"
+fi
+
+# Machine-specific config (not tracked)
+[[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
