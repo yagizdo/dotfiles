@@ -17,7 +17,7 @@ Personal dotfiles for Flutter/mobile development on macOS.
 On a fresh machine:
 
 ```bash
-bash <(curl -sL https://raw.githubusercontent.com/yagizdo/dotfiles/master/install.sh)
+bash <(curl -sL https://raw.githubusercontent.com/yagizdo/dotfiles/master/install.sh) --all
 ```
 
 Or manually:
@@ -26,14 +26,47 @@ Or manually:
 git clone git@github.com:yagizdo/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 chmod +x bootstrap.sh
-./bootstrap.sh
+./bootstrap.sh --all
 ```
 
-Use `--minimal` to skip interactive prompts and install core packages only:
+## Usage
 
 ```bash
-./bootstrap.sh --minimal
+./bootstrap.sh                        # show help
+./bootstrap.sh --all                  # install everything
+./bootstrap.sh --core                 # install core (homebrew, zsh, git)
+./bootstrap.sh -m zsh -m tmux        # install specific modules
+./bootstrap.sh -m claude              # install just Claude Code config
+./bootstrap.sh --dry-run --all       # preview all changes
+./bootstrap.sh --dry-run -m zsh      # preview a single module
 ```
+
+### Flags
+
+| Flag | Description |
+|------|-------------|
+| `-m, --module <name>` | Install a specific module (repeatable) |
+| `-a, --all` | Install all modules |
+| `--core` | Install core modules only |
+| `-n, --dry-run` | Show what would happen without changes |
+| `-v, --verbose` | Verbose output |
+| `-f, --force` | Overwrite without backup |
+| `-h, --help` | Show help message |
+
+### Available Modules
+
+| Module | Core? | Description |
+|--------|-------|-------------|
+| `homebrew` | Yes | Homebrew package manager and Brewfile |
+| `zsh` | Yes | ZSH config with Zinit plugins |
+| `git` | Yes | Git config and global gitignore |
+| `oh-my-posh` | No | Oh My Posh prompt theme |
+| `tmux` | No | Tmux config with TPM |
+| `nvim` | No | Neovim (LazyVim) config |
+| `vscode` | No | VS Code settings |
+| `warp` | No | Warp terminal theme |
+| `ssh` | No | SSH key setup (interactive) |
+| `claude` | No | Claude Code settings |
 
 ## Local Configuration
 
@@ -69,13 +102,14 @@ git config --global user.email "your@email.com"
    ```bash
    cat ~/.dotfiles/vscode/extensions.txt | xargs -L 1 code --install-extension
    ```
-   Or copy `vscode/extensions.json` to your project's `.vscode/` folder for recommendations.
 
 ## Git SSH Setup
 
 Generate SSH key:
 
 ```bash
+./bootstrap.sh -m ssh
+# or directly:
 ./ssh/ssh.sh your@email.com
 ```
 
@@ -90,40 +124,55 @@ pbcopy < ~/.ssh/id_ed25519.pub
 
 ```
 dotfiles/
+├── lib/                # Shared libraries
+│   ├── helpers.sh      # Color, logging, link_file utilities
+│   └── modules.sh      # Module registry and resolution
 ├── zsh/                # Shell configuration
 │   ├── .zshrc          # Main config with Zinit
 │   ├── .zprofile       # Homebrew init
 │   ├── aliases.zsh     # Custom aliases
 │   ├── path.zsh        # PATH configuration
-│   └── exports.zsh     # Environment variables
+│   ├── exports.zsh     # Environment variables
+│   └── install.sh      # Module installer
+├── homebrew/           # Homebrew packages
+│   ├── Brewfile        # Core packages
+│   ├── Brewfile.flutter # Flutter packages
+│   └── install.sh      # Module installer
 ├── warp/               # Warp terminal theme
-│   └── themes/
-│       └── catppuccin_mocha.yml
+│   ├── themes/
+│   │   └── catppuccin_mocha.yml
+│   └── install.sh
 ├── tmux/               # Tmux configuration
-│   └── tmux.conf
+│   ├── tmux.conf
+│   └── install.sh
 ├── nvim/               # Neovim/LazyVim
 │   ├── init.lua
-│   └── lua/plugins/
+│   ├── lua/plugins/
+│   └── install.sh
 ├── vscode/             # VS Code settings
 │   ├── settings.json
-│   ├── extensions.json # Workspace recommendations
-│   └── extensions.txt
+│   ├── extensions.json
+│   ├── extensions.txt
+│   └── install.sh
 ├── oh-my-posh/         # Prompt theme
-│   └── theme.omp.json
-├── .claude/            # Claude Code settings
-│   └── settings.json
+│   ├── theme.omp.json
+│   └── install.sh
+├── claude/             # Claude Code settings
+│   ├── settings.json
+│   ├── settings.local.json
+│   └── install.sh
 ├── ssh/                # SSH key setup
-│   └── ssh.sh
+│   ├── ssh.sh
+│   └── install.sh
 ├── git/                # Git configuration
-│   ├── .gitconfig      # Global git config (includes ~/.gitconfig.local)
+│   ├── .gitconfig
 │   ├── .gitignore_global
-│   └── setup-git.sh    # Git credentials helper
-├── Brewfile            # Core packages
-├── Brewfile.flutter    # Flutter packages
-├── bootstrap.sh        # Main setup script
+│   ├── setup-git.sh
+│   └── install.sh
+├── bootstrap.sh        # Main modular installer
 ├── install.sh          # One-liner entry point for fresh machines
-├── claude-code-setup.sh # Claude Code settings import
-└── README.md           # This file
+├── claude-code-setup.sh # Claude Code full setup (plugins, powerline)
+└── README.md
 ```
 
 ## Key Bindings
@@ -168,5 +217,5 @@ The repo auto-detects its own location — you can clone it anywhere, not just `
 ```bash
 cd ~/.dotfiles  # or wherever you cloned it
 git pull
-./bootstrap.sh
+./bootstrap.sh --all
 ```
