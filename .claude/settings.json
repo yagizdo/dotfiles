@@ -10,6 +10,7 @@
     ],
     "defaultMode": "plan"
   },
+  "model": "sonnet",
   "statusLine": {
     "type": "command",
     "command": "npx -y @owloops/claude-powerline@latest --theme=rose-pine --style=powerline"
@@ -19,6 +20,23 @@
     "compound-engineering@every-marketplace": true,
     "swift-lsp@claude-plugins-official": true,
     "superpowers@claude-plugins-official": true,
-    "xclaude-plugin@xclaude-plugin-marketplace": true
-  }
+    "xclaude-plugin@xclaude-plugin-marketplace": true,
+    "obsidian@obsidian-skills": true,
+    "ui-ux-pro-max@ui-ux-pro-max-skill": true
+  },
+  "extraKnownMarketplaces": {
+    "obsidian-skills": {
+      "source": {
+        "source": "github",
+        "repo": "kepano/obsidian-skills"
+      }
+    },
+    "ui-ux-pro-max-skill": {
+      "source": {
+        "source": "github",
+        "repo": "nextlevelbuilder/ui-ux-pro-max-skill"
+      }
+    }
+  },
+  "effortLevel": "medium"
 }
