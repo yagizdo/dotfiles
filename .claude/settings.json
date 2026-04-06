@@ -10,7 +10,6 @@
     ],
     "defaultMode": "plan"
   },
-  "model": "sonnet",
   "statusLine": {
     "type": "command",
     "command": "npx -y @owloops/claude-powerline@latest --theme=rose-pine --style=powerline"
