@@ -12,9 +12,8 @@ font-feature = -liga
 
 macos-titlebar-style = transparent
 
-# macOS remap: Physical Ctrl → Cmd, Physical Windows → Ctrl
+# macOS remap: Physical Ctrl → Cmd, Physical Command → Ctrl
 # So "cmd+" keybinds = Physical Ctrl key
-# Physical Windows+key naturally passes as Ctrl+key (no remap needed)
 
 # Copy/paste (Physical Ctrl+C/V)
 keybind = cmd+c=copy_to_clipboard
@@ -27,4 +26,8 @@ keybind = cmd+p=text:\x10
 keybind = cmd+n=text:\x0e
 keybind = cmd+s=text:\x13
 keybind = cmd+o=text:\x0f
+keybind = cmd+h=text:\x08
 keybind = cmd+b=text:\x02
+keybind = cmd+w=text:\x17
+keybind = cmd+opt+left=unbind
+keybind = cmd+opt+right=unbind
