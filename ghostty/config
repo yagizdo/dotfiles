@@ -31,3 +31,9 @@ keybind = cmd+b=text:\x02
 keybind = cmd+w=text:\x17
 keybind = cmd+opt+left=unbind
 keybind = cmd+opt+right=unbind
+
+# Ctrl+Arrow for Zellij (Physical Ctrl = cmd in macOS)
+keybind = cmd+left=text:\x1b[1;5D
+keybind = cmd+right=text:\x1b[1;5C
+keybind = cmd+up=text:\x1b[1;5A
+keybind = cmd+down=text:\x1b[1;5B
