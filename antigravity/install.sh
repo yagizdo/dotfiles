@@ -12,7 +12,9 @@ link_file "$DOTFILES_DIR/antigravity/settings.json" "$ANTIGRAVITY_DIR/settings.j
 link_file "$DOTFILES_DIR/antigravity/keybindings.json" "$ANTIGRAVITY_DIR/keybindings.json"
 
 # Install extensions
-if command -v antigravity &>/dev/null; then
+if [[ "$DRY_RUN" == "true" ]]; then
+  dry_run "Would install Antigravity extensions from extensions.txt"
+elif command -v antigravity &>/dev/null; then
   log_info "Installing extensions..."
   while IFS= read -r ext; do
     antigravity --install-extension "$ext" --force 2>/dev/null || true

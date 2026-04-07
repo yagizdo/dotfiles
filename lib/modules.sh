@@ -8,7 +8,7 @@
 # ════════════════════════════════════════════
 
 CORE_MODULES=(homebrew zsh git)
-ALL_MODULES=(homebrew zsh git oh-my-posh nvim vscode ssh claude ghostty zellij)
+ALL_MODULES=(homebrew zsh git oh-my-posh nvim vscode ssh claude ghostty zellij antigravity)
 
 # Module descriptions via function (Bash 3.2 has no associative arrays)
 module_desc() {
@@ -23,6 +23,7 @@ module_desc() {
     claude)     echo "Claude Code settings" ;;
     ghostty)    echo "Ghostty terminal config" ;;
     zellij)     echo "Zellij multiplexer config" ;;
+    antigravity) echo "Antigravity (VS Code fork) settings" ;;
     *)          echo "" ;;
   esac
 }

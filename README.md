@@ -33,11 +33,19 @@ chmod +x bootstrap.sh
 ./bootstrap.sh                        # show help
 ./bootstrap.sh --all                  # install everything
 ./bootstrap.sh --core                 # install core (homebrew, zsh, git)
-./bootstrap.sh -m zsh -m nvim        # install specific modules
-./bootstrap.sh -m claude              # install just Claude Code config
 ./bootstrap.sh --dry-run --all       # preview all changes
-./bootstrap.sh --dry-run -m zsh      # preview a single module
 ```
+
+### Install specific modules
+
+```bash
+./bootstrap.sh -m zsh                 # install a single module
+./bootstrap.sh -m zsh -m nvim        # install multiple modules
+./bootstrap.sh -m claude              # install just Claude Code config
+./bootstrap.sh --dry-run -m zsh      # preview what a module would do
+```
+
+You can combine `-m` flags to install any combination. Use `--dry-run` to preview changes before applying.
 
 ### Flags
 
@@ -63,6 +71,9 @@ chmod +x bootstrap.sh
 | `vscode` | No | VS Code settings |
 | `ssh` | No | SSH key setup (interactive) |
 | `claude` | No | Claude Code settings |
+| `ghostty` | No | Ghostty terminal config |
+| `zellij` | No | Zellij multiplexer config |
+| `antigravity` | No | Antigravity (VS Code fork) settings |
 
 ## Local Configuration
 
@@ -155,6 +166,15 @@ dotfiles/
 │   ├── .gitconfig
 │   ├── .gitignore_global
 │   ├── setup-git.sh
+│   └── install.sh
+├── ghostty/            # Ghostty terminal
+│   └── install.sh
+├── zellij/             # Zellij multiplexer
+│   └── install.sh
+├── antigravity/        # Antigravity (VS Code fork)
+│   ├── settings.json
+│   ├── keybindings.json
+│   ├── extensions.txt
 │   └── install.sh
 ├── bootstrap.sh        # Main modular installer
 ├── install.sh          # One-liner entry point for fresh machines
