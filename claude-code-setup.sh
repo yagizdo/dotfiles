@@ -109,7 +109,7 @@ elif [ -f "$HOME/.local/bin/claude" ]; then
 else
   echo -e "${RED}not found${NC}"
   echo -e "${RED}Error: Claude Code CLI is required. Install it first:${NC}"
-  echo -e "${RED}  npm install -g @anthropic-ai/claude-code${NC}"
+  echo -e "${RED}  brew install --cask claude-code@latest${NC}"
   exit 1
 fi
 
