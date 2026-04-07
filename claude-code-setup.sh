@@ -28,11 +28,18 @@ NC='\033[0m' # No Color
 MARKETPLACES=(
   "anthropics/claude-plugins-official"
   "https://github.com/kieranklaassen/compound-engineering-plugin.git"
+  "conorluddy/xclaude-plugin"
+  "kepano/obsidian-skills"
+  "nextlevelbuilder/ui-ux-pro-max-skill"
 )
 
 PLUGINS=(
-  "context7@claude-plugins-official"
   "compound-engineering@every-marketplace"
+  "superpowers@claude-plugins-official"
+  "swift-lsp@claude-plugins-official"
+  "obsidian@obsidian-skills"
+  "ui-ux-pro-max@ui-ux-pro-max-skill"
+  "xclaude-plugin@xclaude-plugin-marketplace"
 )
 
 # Parse arguments
@@ -59,8 +66,8 @@ while [[ $# -gt 0 ]]; do
       echo ""
       echo "This script will:"
       echo "  1. Install settings files (~/.claude/settings*.json)"
-      echo "  2. Add required marketplaces (claude-plugins-official, every-marketplace)"
-      echo "  3. Install plugins (context7, compound-engineering)"
+      echo "  2. Add required marketplaces"
+      echo "  3. Install plugins (compound-engineering, superpowers, swift-lsp, obsidian, ui-ux-pro-max, xclaude-plugin)"
       echo "  4. Install claude-powerline for status line theme"
       exit 0
       ;;
@@ -352,8 +359,8 @@ echo ""
 echo "Installed configuration:"
 echo "  • Settings: ~/.claude/settings.json"
 echo "  • Local settings: ~/.claude/settings.local.json"
-echo "  • Marketplaces: claude-plugins-official, every-marketplace"
-echo "  • Plugins: context7, compound-engineering"
+echo "  • Marketplaces: claude-plugins-official, every-marketplace, xclaude-plugin, obsidian-skills, ui-ux-pro-max-skill"
+echo "  • Plugins: compound-engineering, superpowers, swift-lsp, obsidian, ui-ux-pro-max, xclaude-plugin"
 echo "  • Status line: rose-pine powerline theme"
 echo ""
 echo -e "${BLUE}Restart Claude Code to apply all changes.${NC}"
