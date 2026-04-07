@@ -5,5 +5,5 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/lib/helpers.sh"
 
 log_header "Ghostty"
 
-mkdir -p "$HOME/.config/ghostty"
-link_file "$DOTFILES_DIR/ghostty/config" "$HOME/.config/ghostty/config"
+mkdir -p "$HOME/Library/Application Support/com.mitchellh.ghostty"
+link_file "$DOTFILES_DIR/ghostty/config" "$HOME/Library/Application Support/com.mitchellh.ghostty/config"
