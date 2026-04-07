@@ -5,7 +5,7 @@ Personal dotfiles for Flutter/mobile development on macOS.
 ## What's Included
 
 - **Shell**: ZSH with Zinit plugins, Oh-My-Posh prompt
-- **Editor**: Neovim (LazyVim), VS Code (Flutter extensions)
+- **Editor**: VS Code (Flutter extensions)
 - **Flutter**: FVM setup, CocoaPods, scrcpy
 - **AI**: Claude Code configuration
 - **Git**: SSH key setup, global gitconfig, gitignore
@@ -40,7 +40,7 @@ chmod +x bootstrap.sh
 
 ```bash
 ./bootstrap.sh -m zsh                 # install a single module
-./bootstrap.sh -m zsh -m nvim        # install multiple modules
+./bootstrap.sh -m zsh -m vscode      # install multiple modules
 ./bootstrap.sh -m claude              # install just Claude Code config
 ./bootstrap.sh --dry-run -m zsh      # preview what a module would do
 ```
@@ -67,7 +67,6 @@ You can combine `-m` flags to install any combination. Use `--dry-run` to previe
 | `zsh` | Yes | ZSH config with Zinit plugins |
 | `git` | Yes | Git config and global gitignore |
 | `oh-my-posh` | No | Oh My Posh prompt theme |
-| `nvim` | No | Neovim (LazyVim) config |
 | `vscode` | No | VS Code settings |
 | `ssh` | No | SSH key setup (interactive) |
 | `claude` | No | Claude Code settings |
@@ -102,8 +101,7 @@ git config --global user.email "your@email.com"
 
 ## Manual Steps After Bootstrap
 
-1. Open Neovim - plugins will auto-install
-3. Install VS Code extensions:
+1. Install VS Code extensions:
    ```bash
    cat ~/.dotfiles/vscode/extensions.txt | xargs -L 1 code --install-extension
    ```
@@ -143,10 +141,6 @@ dotfiles/
 │   ├── Brewfile        # Core packages
 │   ├── Brewfile.flutter # Flutter packages
 │   └── install.sh      # Module installer
-├── nvim/               # Neovim/LazyVim
-│   ├── init.lua
-│   ├── lua/plugins/
-│   └── install.sh
 ├── vscode/             # VS Code settings
 │   ├── settings.json
 │   ├── extensions.json

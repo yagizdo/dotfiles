@@ -8,7 +8,7 @@
 # ════════════════════════════════════════════
 
 CORE_MODULES=(homebrew zsh git)
-ALL_MODULES=(homebrew zsh git oh-my-posh nvim vscode ssh claude ghostty zellij antigravity)
+ALL_MODULES=(homebrew zsh git oh-my-posh vscode ssh claude ghostty zellij antigravity)
 
 # Module descriptions via function (Bash 3.2 has no associative arrays)
 module_desc() {
@@ -17,7 +17,6 @@ module_desc() {
     zsh)        echo "ZSH config with Zinit plugins" ;;
     git)        echo "Git config and global gitignore" ;;
     oh-my-posh) echo "Oh My Posh prompt theme" ;;
-    nvim)       echo "Neovim (LazyVim) config" ;;
     vscode)     echo "VS Code settings" ;;
     ssh)        echo "SSH key setup (interactive)" ;;
     claude)     echo "Claude Code settings" ;;

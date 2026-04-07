@@ -50,7 +50,7 @@ Examples:
   $(basename "$0")                        # show this help
   $(basename "$0") --all                  # install everything
   $(basename "$0") --core                 # install core (homebrew, zsh, git)
-  $(basename "$0") -m zsh -m nvim        # install specific modules
+  $(basename "$0") -m zsh -m vscode      # install specific modules
   $(basename "$0") -m claude              # install just Claude Code config
   $(basename "$0") --dry-run --all       # preview all changes
 
@@ -213,5 +213,5 @@ if [[ "$DRY_RUN" != "true" ]]; then
   echo ""
   log_info "Next steps:"
   echo "  1. Restart your shell: exec zsh"
-  echo "  2. Open Neovim — plugins will auto-install"
+  echo "  2. Open your editor and verify settings"
 fi

@@ -19,7 +19,6 @@ brew "fvm"
 brew "jq"
 
 # Casks
-cask "alfred"
 cask "claude-code@latest"
 cask "codexbar"
 cask "font-meslo-lg-nerd-font"
@@ -29,4 +28,3 @@ cask "hot"
 cask "kap"
 cask "minisim"
 cask "notion-calendar"
-cask "warp"

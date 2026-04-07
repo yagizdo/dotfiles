@@ -11,9 +11,6 @@ add_to_path "$HOME/fvm/default/bin"
 # Antigravity
 add_to_path "$HOME/.antigravity/antigravity/bin"
 
-# Shorebird
-add_to_path "$HOME/.shorebird/bin"
-
 # Pub cache (Dart global packages)
 export PATH="$PATH:$HOME/.pub-cache/bin"
 
