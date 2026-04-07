@@ -23,8 +23,6 @@ zinit light-mode for \
 zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
-zinit light Aloxaf/fzf-tab
-
 # OMZ plugins
 zinit snippet OMZP::git
 zinit snippet OMZP::command-not-found
@@ -46,11 +44,6 @@ setopt hist_ignore_all_dups
 # Oh-My-Posh
 eval "$(oh-my-posh init zsh --config $HOME/.config/oh-my-posh/theme.omp.json)"
 
-# Zoxide (smart cd)
-eval "$(zoxide init zsh)"
-
-# FZF
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # Source custom configs
 source "$DOTFILES/zsh/aliases.zsh"

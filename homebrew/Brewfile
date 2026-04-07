@@ -5,20 +5,18 @@ tap "jandedobbeleer/oh-my-posh"
 # Shell & Terminal
 brew "zsh"
 brew "oh-my-posh"
-brew "eza"
-brew "zoxide"
-brew "fzf"
+brew "fish"
 
 # Development
 brew "git"
+brew "gh"
 brew "neovim"
 brew "node"
 brew "go"
+brew "fvm"
 
 # Utilities
-brew "ripgrep"
 brew "jq"
-brew "wget"
 
 # Casks
 cask "font-meslo-lg-nerd-font"
