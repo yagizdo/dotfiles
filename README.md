@@ -7,7 +7,6 @@ Personal dotfiles for Flutter/mobile development on macOS.
 - **Shell**: ZSH with Zinit plugins, Oh-My-Posh prompt
 - **Terminal**: Warp with Catppuccin Mocha theme
 - **Editor**: Neovim (LazyVim), VS Code (Flutter extensions)
-- **Multiplexer**: Tmux with vim navigation
 - **Flutter**: FVM setup, CocoaPods, scrcpy
 - **AI**: Claude Code configuration
 - **Git**: SSH key setup, global gitconfig, gitignore
@@ -35,7 +34,7 @@ chmod +x bootstrap.sh
 ./bootstrap.sh                        # show help
 ./bootstrap.sh --all                  # install everything
 ./bootstrap.sh --core                 # install core (homebrew, zsh, git)
-./bootstrap.sh -m zsh -m tmux        # install specific modules
+./bootstrap.sh -m zsh -m nvim        # install specific modules
 ./bootstrap.sh -m claude              # install just Claude Code config
 ./bootstrap.sh --dry-run --all       # preview all changes
 ./bootstrap.sh --dry-run -m zsh      # preview a single module
@@ -61,7 +60,6 @@ chmod +x bootstrap.sh
 | `zsh` | Yes | ZSH config with Zinit plugins |
 | `git` | Yes | Git config and global gitignore |
 | `oh-my-posh` | No | Oh My Posh prompt theme |
-| `tmux` | No | Tmux config with TPM |
 | `nvim` | No | Neovim (LazyVim) config |
 | `vscode` | No | VS Code settings |
 | `warp` | No | Warp terminal theme |
@@ -95,8 +93,7 @@ git config --global user.email "your@email.com"
 
 ## Manual Steps After Bootstrap
 
-1. Open tmux and press `Ctrl+a I` to install plugins
-2. Open Neovim - plugins will auto-install
+1. Open Neovim - plugins will auto-install
 3. Set Warp theme: Settings > Appearance > Themes > catppuccin_mocha
 4. Install VS Code extensions:
    ```bash
@@ -142,9 +139,6 @@ dotfiles/
 │   ├── themes/
 │   │   └── catppuccin_mocha.yml
 │   └── install.sh
-├── tmux/               # Tmux configuration
-│   ├── tmux.conf
-│   └── install.sh
 ├── nvim/               # Neovim/LazyVim
 │   ├── init.lua
 │   ├── lua/plugins/
@@ -176,17 +170,6 @@ dotfiles/
 ```
 
 ## Key Bindings
-
-### Tmux
-
-| Key | Action |
-|-----|--------|
-| `Ctrl+a` | Prefix key |
-| `Ctrl+a h/j/k/l` | Navigate panes (vim-style) |
-| `Ctrl+a \|` | Split horizontally |
-| `Ctrl+a -` | Split vertically |
-| `Ctrl+a r` | Reload config |
-| `Shift+Left/Right` | Switch windows |
 
 ### Shell Aliases
 

@@ -1,6 +1,6 @@
 // Zellij config - using defaults for keybinds (no clear-defaults)
 // Ctrl+g → locked, Ctrl+p → pane, Ctrl+t → tab, Ctrl+n → resize,
-// Ctrl+s → scroll, Ctrl+o → session, Ctrl+h → move, Ctrl+b → tmux
+// Ctrl+s → scroll, Ctrl+o → session, Ctrl+h → move
 
 // Shell
 default_shell "fish"
