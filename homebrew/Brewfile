@@ -21,5 +21,4 @@ brew "jq"
 brew "wget"
 
 # Casks
-cask "warp"
 cask "font-meslo-lg-nerd-font"

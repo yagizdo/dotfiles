@@ -8,7 +8,7 @@
 # ════════════════════════════════════════════
 
 CORE_MODULES=(homebrew zsh git)
-ALL_MODULES=(homebrew zsh git oh-my-posh nvim vscode warp ssh claude)
+ALL_MODULES=(homebrew zsh git oh-my-posh nvim vscode ssh claude)
 
 # Module descriptions via function (Bash 3.2 has no associative arrays)
 module_desc() {
@@ -19,7 +19,6 @@ module_desc() {
     oh-my-posh) echo "Oh My Posh prompt theme" ;;
     nvim)       echo "Neovim (LazyVim) config" ;;
     vscode)     echo "VS Code settings" ;;
-    warp)       echo "Warp terminal theme" ;;
     ssh)        echo "SSH key setup (interactive)" ;;
     claude)     echo "Claude Code settings" ;;
     *)          echo "" ;;

@@ -5,7 +5,6 @@ Personal dotfiles for Flutter/mobile development on macOS.
 ## What's Included
 
 - **Shell**: ZSH with Zinit plugins, Oh-My-Posh prompt
-- **Terminal**: Warp with Catppuccin Mocha theme
 - **Editor**: Neovim (LazyVim), VS Code (Flutter extensions)
 - **Flutter**: FVM setup, CocoaPods, scrcpy
 - **AI**: Claude Code configuration
@@ -62,7 +61,6 @@ chmod +x bootstrap.sh
 | `oh-my-posh` | No | Oh My Posh prompt theme |
 | `nvim` | No | Neovim (LazyVim) config |
 | `vscode` | No | VS Code settings |
-| `warp` | No | Warp terminal theme |
 | `ssh` | No | SSH key setup (interactive) |
 | `claude` | No | Claude Code settings |
 
@@ -94,8 +92,7 @@ git config --global user.email "your@email.com"
 ## Manual Steps After Bootstrap
 
 1. Open Neovim - plugins will auto-install
-3. Set Warp theme: Settings > Appearance > Themes > catppuccin_mocha
-4. Install VS Code extensions:
+3. Install VS Code extensions:
    ```bash
    cat ~/.dotfiles/vscode/extensions.txt | xargs -L 1 code --install-extension
    ```
@@ -135,10 +132,6 @@ dotfiles/
 │   ├── Brewfile        # Core packages
 │   ├── Brewfile.flutter # Flutter packages
 │   └── install.sh      # Module installer
-├── warp/               # Warp terminal theme
-│   ├── themes/
-│   │   └── catppuccin_mocha.yml
-│   └── install.sh
 ├── nvim/               # Neovim/LazyVim
 │   ├── init.lua
 │   ├── lua/plugins/
