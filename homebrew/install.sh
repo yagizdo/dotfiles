@@ -34,17 +34,3 @@ else
   brew bundle --file="$DOTFILES_DIR/homebrew/Brewfile"
   log_ok "Brewfile packages installed"
 fi
-
-# Flutter Brewfile is opt-in — only run if interactive and user agrees
-if [[ -t 0 ]] && [[ "$DRY_RUN" != "true" ]]; then
-  if [[ -f "$DOTFILES_DIR/homebrew/Brewfile.flutter" ]]; then
-    printf "Install Flutter development tools? (y/N) "
-    read -r response
-    if [[ "$response" =~ ^[Yy]$ ]]; then
-      brew bundle --file="$DOTFILES_DIR/homebrew/Brewfile.flutter"
-      log_ok "Flutter packages installed"
-    else
-      log_skip "Flutter packages"
-    fi
-  fi
-fi

@@ -13,10 +13,10 @@ brew "gh"
 brew "neovim"
 brew "node"
 brew "go"
-brew "fvm"
 
 # Utilities
 brew "jq"
+brew "scrcpy"
 
 # Casks
 cask "claude-code@latest"
