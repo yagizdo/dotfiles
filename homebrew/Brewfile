@@ -5,22 +5,26 @@ tap "jandedobbeleer/oh-my-posh"
 # Shell & Terminal
 brew "zsh"
 brew "oh-my-posh"
-brew "eza"
-brew "zoxide"
-brew "fzf"
+brew "fish"
 
 # Development
 brew "git"
+brew "gh"
 brew "neovim"
-brew "tmux"
 brew "node"
 brew "go"
 
 # Utilities
-brew "ripgrep"
 brew "jq"
-brew "wget"
+brew "scrcpy"
 
 # Casks
-cask "warp"
+cask "claude-code@latest"
+cask "codexbar"
 cask "font-meslo-lg-nerd-font"
+cask "gcloud-cli"
+cask "ghostty"
+cask "hot"
+cask "kap"
+cask "minisim"
+cask "notion-calendar"

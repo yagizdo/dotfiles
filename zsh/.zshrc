@@ -1,14 +1,15 @@
-# Dotfiles path
-export DOTFILES="$HOME/.dotfiles"
+# ── Zinit Plugin Manager ──
+ZINIT_HOME="$HOME/.local/share/zinit/zinit.git"
 
-# Zinit installation
-if [[ ! -f $HOME/.local/share/zinit/zinit.git/zinit.zsh ]]; then
-    print -P "%F{33}Installing Zinit...%f"
+if [[ ! -f "$ZINIT_HOME/zinit.zsh" ]]; then
+    print -P "%F{33} %F{220}Installing %F{33}ZDHARMA-CONTINUUM%F{220} Initiative Plugin Manager (%F{33}zdharma-continuum/zinit%F{220})…%f"
     command mkdir -p "$HOME/.local/share/zinit" && command chmod g-rwX "$HOME/.local/share/zinit"
-    command git clone https://github.com/zdharma-continuum/zinit "$HOME/.local/share/zinit/zinit.git"
+    command git clone https://github.com/zdharma-continuum/zinit "$ZINIT_HOME" && \
+        print -P "%F{33} %F{34}Installation successful.%f%b" || \
+        print -P "%F{160} The clone has failed.%f%b"
 fi
 
-source "$HOME/.local/share/zinit/zinit.git/zinit.zsh"
+source "$ZINIT_HOME/zinit.zsh"
 autoload -Uz _zinit
 (( ${+_comps} )) && _comps[zinit]=_zinit
 
@@ -19,58 +20,26 @@ zinit light-mode for \
     zdharma-continuum/zinit-annex-patch-dl \
     zdharma-continuum/zinit-annex-rust
 
-# Zinit plugins
+# ── Plugins ──
 zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
 zinit light Aloxaf/fzf-tab
+zi snippet https://github.com/ohmyzsh/ohmyzsh/blob/master/plugins/git/git.plugin.zsh
 
-# OMZ plugins
-zinit snippet OMZP::git
-zinit snippet OMZP::command-not-found
+# ── Completion ──
+autoload -Uz compinit
+compinit
+zinit cdreplay -q
 
-# Keybindings
-bindkey -e
-bindkey '^[[1;5C' forward-word
-bindkey '^[[1;5D' backward-word
+# ── PATH ──
+export PATH="$HOME/fvm/default/bin:$PATH"
+export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
+export PATH="$HOME/.shorebird/bin:$PATH"
+export PATH="$PATH:$HOME/.pub-cache/bin"
+export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
 
-# History
-HISTSIZE=5000
-HISTFILE=~/.zsh_history
-SAVEHIST=$HISTSIZE
-setopt appendhistory
-setopt sharehistory
-setopt hist_ignore_space
-setopt hist_ignore_all_dups
-
-# Oh-My-Posh
-eval "$(oh-my-posh init zsh --config $HOME/.config/oh-my-posh/theme.omp.json)"
-
-# Zoxide (smart cd)
-eval "$(zoxide init zsh)"
-
-# FZF
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-# Source custom configs
-source "$DOTFILES/zsh/aliases.zsh"
-source "$DOTFILES/zsh/path.zsh"
-source "$DOTFILES/zsh/exports.zsh"
-
-# ── Optional tool integrations ──
-
-# Antigravity
-if [ -d "$HOME/.antigravity" ]; then
-  export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
-fi
+# ── Tool Integrations ──
 
 # Dart CLI completion
 [[ -f "$HOME/.dart-cli-completion/zsh-config.zsh" ]] && . "$HOME/.dart-cli-completion/zsh-config.zsh" || true
-
-# Shorebird
-if [ -d "$HOME/.shorebird" ]; then
-  export PATH="$HOME/.shorebird/bin:$PATH"
-fi
-
-# Machine-specific config (not tracked)
-[[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"

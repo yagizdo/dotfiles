@@ -1,8 +1,8 @@
 # General
 alias c='clear'
-alias ls='eza --icons'
-alias ll='eza -l --icons'
-alias la='eza -la --icons'
+alias ls='ls -G'
+alias ll='ls -lG'
+alias la='ls -laG'
 alias vim='nvim'
 alias reloadshell="exec zsh"
 
