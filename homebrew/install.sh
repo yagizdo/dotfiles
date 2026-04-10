@@ -34,3 +34,11 @@ else
   brew bundle --file="$DOTFILES_DIR/homebrew/Brewfile"
   log_ok "Brewfile packages installed"
 fi
+
+# Enable tracked git hooks (pre-commit auto-dumps Brewfile)
+if [[ -d "$DOTFILES_DIR/.git" ]] && [[ -d "$DOTFILES_DIR/hooks" ]]; then
+  if ! dry_run "Would set core.hooksPath=hooks in dotfiles repo"; then
+    git -C "$DOTFILES_DIR" config core.hooksPath hooks
+    log_ok "Git hooks enabled (core.hooksPath=hooks)"
+  fi
+fi

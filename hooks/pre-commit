@@ -1,0 +1,17 @@
+#!/bin/bash
+# Auto-dump Brewfile before commit so repo always mirrors installed packages.
+set -eo pipefail
+
+if ! command -v brew &>/dev/null; then
+  exit 0
+fi
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+BREWFILE="$REPO_ROOT/homebrew/Brewfile"
+
+brew bundle dump --file="$BREWFILE" --force >/dev/null
+
+if ! git diff --quiet -- "$BREWFILE"; then
+  git add "$BREWFILE"
+  echo "[pre-commit] Brewfile updated and staged"
+fi
