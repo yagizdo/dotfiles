@@ -20,5 +20,11 @@
     "swift-lsp@claude-plugins-official": true,
     "superpowers@claude-plugins-official": true,
     "xclaude-plugin@xclaude-plugin-marketplace": true
-  }
+  },
+  "voiceEnabled": true,
+  "voice": {
+    "enabled": true,
+    "mode": "hold"
+  },
+  "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
 }
