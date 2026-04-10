@@ -80,6 +80,38 @@ foreach ($link in $links) {
     Write-Ok "$dst -> $src"
 }
 
+# --- Install extensions ------------------------------------------------------
+Write-Header 'Extensions'
+
+$extensionsFile = Join-Path $SourceDir 'extensions.txt'
+$antigravityCmd = Get-Command 'antigravity' -ErrorAction SilentlyContinue
+if (-not $antigravityCmd) {
+    $fallback = Join-Path $env:LOCALAPPDATA 'Programs\Antigravity\bin\antigravity.cmd'
+    if (Test-Path $fallback) { $antigravityCmd = @{ Source = $fallback } }
+}
+
+if (-not (Test-Path $extensionsFile)) {
+    Write-Warn "extensions.txt not found, skipping"
+} elseif (-not $antigravityCmd) {
+    Write-Warn "Antigravity CLI not found on PATH, skipping extension install"
+} else {
+    $cli = $antigravityCmd.Source
+    Write-Info "Using CLI: $cli"
+    Get-Content $extensionsFile | ForEach-Object {
+        $ext = $_.Trim()
+        if (-not $ext -or $ext.StartsWith('#')) { return }
+        Write-Info "Installing $ext"
+        # Redirect stderr to stdout so the noisy analytics warning doesn't abort
+        # the script under $ErrorActionPreference = 'Stop'.
+        $output = & cmd.exe /c "`"$cli`" --install-extension `"$ext`" --force 2>&1"
+        if ($LASTEXITCODE -eq 0) {
+            Write-Ok "Installed $ext"
+        } else {
+            Write-Warn "Failed ($LASTEXITCODE): $ext`n$output"
+        }
+    }
+}
+
 Write-Header 'Done'
 Write-Info 'Restart Antigravity to pick up the new settings.'
 Write-Host ''
