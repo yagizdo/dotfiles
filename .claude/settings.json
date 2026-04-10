@@ -24,6 +24,18 @@
     "ui-ux-pro-max@ui-ux-pro-max-skill": true
   },
   "extraKnownMarketplaces": {
+    "every-marketplace": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/kieranklaassen/compound-engineering-plugin.git"
+      }
+    },
+    "xclaude-plugin-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "conorluddy/xclaude-plugin"
+      }
+    },
     "obsidian-skills": {
       "source": {
         "source": "github",
