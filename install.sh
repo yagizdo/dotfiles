@@ -1,7 +1,7 @@
 #!/bin/bash
 # One-liner entry point for fresh machines
 # Usage: curl -sL <raw-url> | bash
-#   or:  bash install.sh [--minimal] [--full]
+#   or:  bash install.sh [--all | --core | -m <module> ...]
 
 set -euo pipefail
 

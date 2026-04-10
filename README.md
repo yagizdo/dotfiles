@@ -5,9 +5,7 @@ Personal dotfiles for Flutter/mobile development on macOS.
 ## What's Included
 
 - **Shell**: ZSH with Zinit plugins, Oh-My-Posh prompt
-- **Terminal**: Warp with Catppuccin Mocha theme
-- **Editor**: Neovim (LazyVim), VS Code (Flutter extensions)
-- **Multiplexer**: Tmux with vim navigation
+- **Editor**: VS Code (Flutter extensions)
 - **Flutter**: FVM setup, CocoaPods, scrcpy
 - **AI**: Claude Code configuration
 - **Git**: SSH key setup, global gitconfig, gitignore
@@ -17,7 +15,7 @@ Personal dotfiles for Flutter/mobile development on macOS.
 On a fresh machine:
 
 ```bash
-bash <(curl -sL https://raw.githubusercontent.com/yagizdo/dotfiles/master/install.sh)
+bash <(curl -sL https://raw.githubusercontent.com/yagizdo/dotfiles/master/install.sh) --all
 ```
 
 Or manually:
@@ -26,14 +24,55 @@ Or manually:
 git clone git@github.com:yagizdo/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 chmod +x bootstrap.sh
-./bootstrap.sh
+./bootstrap.sh --all
 ```
 
-Use `--minimal` to skip interactive prompts and install core packages only:
+## Usage
 
 ```bash
-./bootstrap.sh --minimal
+./bootstrap.sh                        # show help
+./bootstrap.sh --all                  # install everything
+./bootstrap.sh --core                 # install core (homebrew, zsh, git)
+./bootstrap.sh --dry-run --all       # preview all changes
 ```
+
+### Install specific modules
+
+```bash
+./bootstrap.sh -m zsh                 # install a single module
+./bootstrap.sh -m zsh -m vscode      # install multiple modules
+./bootstrap.sh -m claude              # install just Claude Code config
+./bootstrap.sh --dry-run -m zsh      # preview what a module would do
+```
+
+You can combine `-m` flags to install any combination. Use `--dry-run` to preview changes before applying.
+
+### Flags
+
+| Flag | Description |
+|------|-------------|
+| `-m, --module <name>` | Install a specific module (repeatable) |
+| `-a, --all` | Install all modules |
+| `--core` | Install core modules only |
+| `-n, --dry-run` | Show what would happen without changes |
+| `-v, --verbose` | Verbose output |
+| `-f, --force` | Overwrite without backup |
+| `-h, --help` | Show help message |
+
+### Available Modules
+
+| Module | Core? | Description |
+|--------|-------|-------------|
+| `homebrew` | Yes | Homebrew package manager and Brewfile |
+| `zsh` | Yes | ZSH config with Zinit plugins |
+| `git` | Yes | Git config and global gitignore |
+| `oh-my-posh` | No | Oh My Posh prompt theme |
+| `vscode` | No | VS Code settings |
+| `ssh` | No | SSH key setup (interactive) |
+| `claude` | No | Claude Code settings |
+| `ghostty` | No | Ghostty terminal config |
+| `zellij` | No | Zellij multiplexer config |
+| `antigravity` | No | Antigravity (VS Code fork) settings |
 
 ## Local Configuration
 
@@ -62,20 +101,18 @@ git config --global user.email "your@email.com"
 
 ## Manual Steps After Bootstrap
 
-1. Open tmux and press `Ctrl+a I` to install plugins
-2. Open Neovim - plugins will auto-install
-3. Set Warp theme: Settings > Appearance > Themes > catppuccin_mocha
-4. Install VS Code extensions:
+1. Install VS Code extensions:
    ```bash
    cat ~/.dotfiles/vscode/extensions.txt | xargs -L 1 code --install-extension
    ```
-   Or copy `vscode/extensions.json` to your project's `.vscode/` folder for recommendations.
 
 ## Git SSH Setup
 
 Generate SSH key:
 
 ```bash
+./bootstrap.sh -m ssh
+# or directly:
 ./ssh/ssh.sh your@email.com
 ```
 
@@ -90,54 +127,56 @@ pbcopy < ~/.ssh/id_ed25519.pub
 
 ```
 dotfiles/
+├── lib/                # Shared libraries
+│   ├── helpers.sh      # Color, logging, link_file utilities
+│   └── modules.sh      # Module registry and resolution
 ├── zsh/                # Shell configuration
 │   ├── .zshrc          # Main config with Zinit
 │   ├── .zprofile       # Homebrew init
 │   ├── aliases.zsh     # Custom aliases
 │   ├── path.zsh        # PATH configuration
-│   └── exports.zsh     # Environment variables
-├── warp/               # Warp terminal theme
-│   └── themes/
-│       └── catppuccin_mocha.yml
-├── tmux/               # Tmux configuration
-│   └── tmux.conf
-├── nvim/               # Neovim/LazyVim
-│   ├── init.lua
-│   └── lua/plugins/
+│   ├── exports.zsh     # Environment variables
+│   └── install.sh      # Module installer
+├── homebrew/           # Homebrew packages
+│   ├── Brewfile        # Core packages
+│   ├── Brewfile.flutter # Flutter packages
+│   └── install.sh      # Module installer
 ├── vscode/             # VS Code settings
 │   ├── settings.json
-│   ├── extensions.json # Workspace recommendations
-│   └── extensions.txt
+│   ├── extensions.json
+│   ├── extensions.txt
+│   └── install.sh
 ├── oh-my-posh/         # Prompt theme
-│   └── theme.omp.json
-├── .claude/            # Claude Code settings
-│   └── settings.json
+│   ├── theme.omp.json
+│   └── install.sh
+├── claude/             # Claude Code settings
+│   ├── settings.json
+│   ├── settings.local.json
+│   └── install.sh
 ├── ssh/                # SSH key setup
-│   └── ssh.sh
+│   ├── ssh.sh
+│   └── install.sh
 ├── git/                # Git configuration
-│   ├── .gitconfig      # Global git config (includes ~/.gitconfig.local)
+│   ├── .gitconfig
 │   ├── .gitignore_global
-│   └── setup-git.sh    # Git credentials helper
-├── Brewfile            # Core packages
-├── Brewfile.flutter    # Flutter packages
-├── bootstrap.sh        # Main setup script
+│   ├── setup-git.sh
+│   └── install.sh
+├── ghostty/            # Ghostty terminal
+│   └── install.sh
+├── zellij/             # Zellij multiplexer
+│   └── install.sh
+├── antigravity/        # Antigravity (VS Code fork)
+│   ├── settings.json
+│   ├── keybindings.json
+│   ├── extensions.txt
+│   └── install.sh
+├── bootstrap.sh        # Main modular installer
 ├── install.sh          # One-liner entry point for fresh machines
-├── claude-code-setup.sh # Claude Code settings import
-└── README.md           # This file
+├── claude-code-setup.sh # Claude Code full setup (plugins, powerline)
+└── README.md
 ```
 
 ## Key Bindings
-
-### Tmux
-
-| Key | Action |
-|-----|--------|
-| `Ctrl+a` | Prefix key |
-| `Ctrl+a h/j/k/l` | Navigate panes (vim-style) |
-| `Ctrl+a \|` | Split horizontally |
-| `Ctrl+a -` | Split vertically |
-| `Ctrl+a r` | Reload config |
-| `Shift+Left/Right` | Switch windows |
 
 ### Shell Aliases
 
@@ -168,5 +207,5 @@ The repo auto-detects its own location — you can clone it anywhere, not just `
 ```bash
 cd ~/.dotfiles  # or wherever you cloned it
 git pull
-./bootstrap.sh
+./bootstrap.sh --all
 ```

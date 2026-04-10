@@ -8,17 +8,14 @@ add_to_path() {
 # FVM Flutter (MUST be first for fvm to work)
 add_to_path "$HOME/fvm/default/bin"
 
-# Local bin
-add_to_path "$HOME/.local/bin"
-
-# Node
-add_to_path "$HOME/.node/bin"
-
-# Go
-add_to_path "$HOME/go/bin"
+# Antigravity
+add_to_path "$HOME/.antigravity/antigravity/bin"
 
 # Pub cache (Dart global packages)
-add_to_path "$HOME/.pub-cache/bin"
+export PATH="$PATH:$HOME/.pub-cache/bin"
+
+# Ruby
+add_to_path "/opt/homebrew/opt/ruby/bin"
 
 # Android SDK
 export ANDROID_HOME="$HOME/Library/Android/sdk"

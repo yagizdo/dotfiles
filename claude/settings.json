@@ -10,12 +10,13 @@
     ],
     "defaultMode": "plan"
   },
+  "model": "sonnet",
   "statusLine": {
     "type": "command",
     "command": "npx -y @owloops/claude-powerline@latest --theme=rose-pine --style=powerline"
   },
   "enabledPlugins": {
-    "context7@claude-plugins-official": false,
+    "context7@claude-plugins-official": true,
     "compound-engineering@every-marketplace": true,
     "swift-lsp@claude-plugins-official": true,
     "superpowers@claude-plugins-official": true,
@@ -37,11 +38,5 @@
       }
     }
   },
-  "voiceEnabled": true,
-  "voice": {
-    "enabled": true,
-    "mode": "hold"
-  },
-  "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
   "effortLevel": "medium"
 }
