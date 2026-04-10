@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Claude Code Windows installer — installs prerequisites via winget and
+    Claude Code Windows installer - installs prerequisites via winget and
     symlinks dotfiles settings.json + CLAUDE.md into %USERPROFILE%\.claude\.
 
 .DESCRIPTION
@@ -19,7 +19,15 @@
 
 $ErrorActionPreference = 'Stop'
 
-# ── Self-elevate to Administrator ────────────────────────────────────────────
+trap {
+    Write-Host ""
+    Write-Host "[ERR] $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host $_.ScriptStackTrace -ForegroundColor DarkRed
+    Read-Host 'Press Enter to close'
+    exit 1
+}
+
+# --- Self-elevate to Administrator -------------------------------------------
 $currentUser = [Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()
 if (-not $currentUser.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Host "[INFO] Elevating to Administrator..." -ForegroundColor Cyan
@@ -36,7 +44,7 @@ function Write-Ok($msg)     { Write-Host "[OK]   $msg" -ForegroundColor Green }
 function Write-Warn($msg)   { Write-Host "[WARN] $msg" -ForegroundColor Yellow }
 function Write-Err($msg)    { Write-Host "[ERR]  $msg" -ForegroundColor Red }
 
-# ── Resolve dotfiles root (parent of this script's directory) ────────────────
+# --- Resolve dotfiles root (parent of this script's directory) ---------------
 $ScriptDir   = Split-Path -Parent $MyInvocation.MyCommand.Path
 $DotfilesDir = Split-Path -Parent $ScriptDir
 $SourceDir   = Join-Path $DotfilesDir '.claude'
@@ -46,7 +54,7 @@ if (-not (Test-Path $SourceDir)) {
     exit 1
 }
 
-# ── Install prerequisites via winget ─────────────────────────────────────────
+# --- Install prerequisites via winget ----------------------------------------
 Write-Header 'Installing prerequisites (winget)'
 
 if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
@@ -70,14 +78,14 @@ foreach ($pkg in $packages) {
         Write-Info "Installing $($pkg.Name)..."
         winget install --id $pkg.Id --exact --silent --accept-package-agreements --accept-source-agreements
         if ($LASTEXITCODE -ne 0) {
-            Write-Warn "winget install $($pkg.Id) returned $LASTEXITCODE — continuing"
+            Write-Warn "winget install $($pkg.Id) returned $LASTEXITCODE - continuing"
         } else {
             Write-Ok "$($pkg.Name) installed"
         }
     }
 }
 
-# ── Symlink config files ─────────────────────────────────────────────────────
+# --- Symlink config files ----------------------------------------------------
 Write-Header 'Linking Claude Code config'
 
 $targetDir = Join-Path $env:USERPROFILE '.claude'

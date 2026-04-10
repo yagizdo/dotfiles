@@ -1,19 +1,27 @@
 <#
 .SYNOPSIS
-    Antigravity Windows config linker — symlinks settings.json and
+    Antigravity Windows config linker - symlinks settings.json and
     keybindings.json from dotfiles into %APPDATA%\Antigravity\User\.
 
 .DESCRIPTION
     Run from PowerShell:  .\antigravity\install.ps1
     Self-elevates to Administrator (required to create symlinks without
-    Developer Mode). Does NOT install Antigravity — assumes it is already
+    Developer Mode). Does NOT install Antigravity - assumes it is already
     installed on Windows. Existing real files are backed up to
     <file>.backup.<timestamp>.
 #>
 
 $ErrorActionPreference = 'Stop'
 
-# ── Self-elevate to Administrator ────────────────────────────────────────────
+trap {
+    Write-Host ""
+    Write-Host "[ERR] $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host $_.ScriptStackTrace -ForegroundColor DarkRed
+    Read-Host 'Press Enter to close'
+    exit 1
+}
+
+# --- Self-elevate to Administrator -------------------------------------------
 $currentUser = [Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()
 if (-not $currentUser.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Host "[INFO] Elevating to Administrator..." -ForegroundColor Cyan
@@ -32,7 +40,7 @@ function Write-Err($msg)    { Write-Host "[ERR]  $msg" -ForegroundColor Red }
 
 Write-Header 'Antigravity'
 
-# ── Resolve paths ────────────────────────────────────────────────────────────
+# --- Resolve paths -----------------------------------------------------------
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $SourceDir = $ScriptDir
 $TargetDir = Join-Path $env:APPDATA 'Antigravity\User'
