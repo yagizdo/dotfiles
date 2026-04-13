@@ -3,7 +3,7 @@
 // Ctrl+s → scroll, Ctrl+o → session, Ctrl+h → move
 
 // Shell
-default_shell "fish"
+default_shell "zsh"
 
 // Theme
 theme "catppuccin-macchiato"
