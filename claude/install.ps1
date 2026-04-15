@@ -18,6 +18,11 @@
 #>
 
 $ErrorActionPreference = 'Stop'
+# PS7+ turns non-zero native exit codes into terminating errors by default.
+# We check $LASTEXITCODE manually for winget/npm, so opt out.
+if ($PSVersionTable.PSVersion.Major -ge 7) {
+    $PSNativeCommandUseErrorActionPreference = $false
+}
 
 trap {
     Write-Host ""
@@ -129,17 +134,28 @@ foreach ($link in $links) {
 Write-Header 'Installing claude-powerline (npm global)'
 
 if (Get-Command npm -ErrorAction SilentlyContinue) {
-    $plInstalled = npm list -g --depth=0 2>$null | Select-String -Pattern '@owloops/claude-powerline' -Quiet
+    # npm list -g can print ENOENT warnings to stderr and return non-zero even when the
+    # target package is installed. Ignore exit code; only the stdout match matters.
+    $plInstalled = $false
+    try {
+        $npmOut = & npm ls -g --depth=0 --parseable 2>$null
+        $plInstalled = ($npmOut | Select-String -Pattern '@owloops[\\/]claude-powerline' -Quiet)
+    } catch {
+        Write-Warn "npm ls failed: $($_.Exception.Message)"
+    }
+    $global:LASTEXITCODE = 0
+
     if ($plInstalled) {
         Write-Ok '@owloops/claude-powerline already installed'
     } else {
         Write-Info 'Installing @owloops/claude-powerline globally...'
-        npm install -g '@owloops/claude-powerline'
+        & npm install -g '@owloops/claude-powerline'
         if ($LASTEXITCODE -eq 0) {
             Write-Ok '@owloops/claude-powerline installed'
         } else {
             Write-Warn "npm install returned $LASTEXITCODE - statusline may not work until resolved"
         }
+        $global:LASTEXITCODE = 0
     }
 } else {
     Write-Warn 'npm not found on PATH yet. Restart terminal and run: npm install -g @owloops/claude-powerline'

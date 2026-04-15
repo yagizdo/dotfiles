@@ -21,7 +21,8 @@
     "superpowers@claude-plugins-official": true,
     "xclaude-plugin@xclaude-plugin-marketplace": true,
     "obsidian@obsidian-skills": true,
-    "ui-ux-pro-max@ui-ux-pro-max-skill": true
+    "ui-ux-pro-max@ui-ux-pro-max-skill": true,
+    "quiver@quiver": true
   },
   "extraKnownMarketplaces": {
     "every-marketplace": {
@@ -47,13 +48,19 @@
         "source": "github",
         "repo": "nextlevelbuilder/ui-ux-pro-max-skill"
       }
+    },
+    "quiver": {
+      "source": {
+        "source": "github",
+        "repo": "yagizdo/quiver"
+      }
     }
   },
+  "effortLevel": "medium",
   "voiceEnabled": true,
   "voice": {
     "enabled": true,
     "mode": "hold"
   },
-  "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
-  "effortLevel": "medium"
+  "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
 }
