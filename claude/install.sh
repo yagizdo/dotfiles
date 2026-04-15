@@ -1,22 +1,33 @@
 #!/bin/bash
-# Module: claude — Link Claude Code config, install plugins + powerline binary
+# Module: claude — Install Claude Code CLI and delegate config+plugins to claude-code-setup.sh
 set -eo pipefail
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/lib/helpers.sh"
 
 log_header "Claude Code"
 
-mkdir -p "$HOME/.claude"
-link_file "$DOTFILES_DIR/.claude/settings.json" "$HOME/.claude/settings.json"
-link_file "$DOTFILES_DIR/.claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
-link_file "$DOTFILES_DIR/.claude/claude-powerline.json" "$HOME/.claude/claude-powerline.json"
+# Install Claude Code CLI if missing (via Homebrew cask)
+if ! command -v claude &>/dev/null; then
+  if dry_run "Would install claude-code cask via brew"; then
+    :
+  elif command -v brew &>/dev/null; then
+    log_info "Installing Claude Code CLI..."
+    brew install --cask claude-code@latest
+    log_ok "Claude Code CLI installed"
+  else
+    log_warn "Homebrew not found. Install Claude Code manually, then re-run this module."
+  fi
+fi
 
-# Full setup: marketplaces, plugins, powerline binary.
-# Requires `claude` CLI (installed by homebrew module, which runs before this one).
+# Delegate settings install + plugins + powerline to the dedicated setup script.
+# It handles symlink/copy modes itself and also installs settings.local.json.
+SETUP_FLAG="--symlink"
+[[ "${COPY_MODE:-false}" == "true" ]] && SETUP_FLAG="--copy"
+
 if [[ "${DRY_RUN:-false}" == "true" ]]; then
-  dry_run "Would run claude-code-setup.sh (plugins, marketplaces, powerline)"
+  dry_run "Would run claude-code-setup.sh $SETUP_FLAG"
 elif command -v claude &>/dev/null; then
-  bash "$DOTFILES_DIR/claude-code-setup.sh"
+  bash "$DOTFILES_DIR/claude-code-setup.sh" "$SETUP_FLAG"
 else
   log_warn "Claude Code CLI not found. Skipping plugins/powerline install."
-  log_warn "After installing Claude Code, run: bash $DOTFILES_DIR/claude-code-setup.sh"
+  log_warn "After installing Claude Code, run: bash $DOTFILES_DIR/claude-code-setup.sh $SETUP_FLAG"
 fi

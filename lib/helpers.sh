@@ -53,6 +53,7 @@ log_header() { printf '\n%b══ %s ══%b\n\n' "$BOLD" "$*" "$NC"; }
 DRY_RUN="${DRY_RUN:-false}"
 VERBOSE="${VERBOSE:-false}"
 FORCE="${FORCE:-false}"
+COPY_MODE="${COPY_MODE:-false}"
 
 dry_run() {
   if [[ "$DRY_RUN" == "true" ]]; then
@@ -81,14 +82,20 @@ link_file() {
     return 1
   fi
 
-  # Already correctly linked
-  if [[ -L "$dest" ]] && [[ "$(readlink "$dest")" == "$src" ]]; then
+  # Already correctly linked (skip check in copy mode — we want to replace the symlink)
+  if [[ "$COPY_MODE" != "true" ]] && [[ -L "$dest" ]] && [[ "$(readlink "$dest")" == "$src" ]]; then
     log_ok "$dest -> $src (already linked)"
     return 0
   fi
 
-  if dry_run "Would link $dest -> $src"; then
-    return 0
+  if [[ "$COPY_MODE" == "true" ]]; then
+    if dry_run "Would copy $src -> $dest"; then
+      return 0
+    fi
+  else
+    if dry_run "Would link $dest -> $src"; then
+      return 0
+    fi
   fi
 
   # Backup existing file/dir (not symlinks) unless --force
@@ -109,9 +116,14 @@ link_file() {
   # Create parent directory if needed
   mkdir -p "$(dirname "$dest")"
 
-  # Use -sfn for directory symlinks on macOS
-  ln -sfn "$src" "$dest"
-  log_ok "$dest -> $src"
+  if [[ "$COPY_MODE" == "true" ]]; then
+    cp -R "$src" "$dest"
+    log_ok "$dest (copied from $src)"
+  else
+    # Use -sfn for directory symlinks on macOS
+    ln -sfn "$src" "$dest"
+    log_ok "$dest -> $src"
+  fi
 }
 
 # ════════════════════════════════════════════

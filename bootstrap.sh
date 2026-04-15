@@ -44,6 +44,7 @@ Options:
   -n, --dry-run         Show what would happen without making changes
   -v, --verbose         Verbose output
   -f, --force           Overwrite without backup
+  -c, --copy            Copy files instead of symlinking (for disposable clones)
   -h, --help            Show this help message
 
 Examples:
@@ -94,6 +95,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     -f|--force)
       FORCE="true"
+      shift
+      ;;
+    -c|--copy)
+      COPY_MODE="true"
       shift
       ;;
     -h|--help)
@@ -174,7 +179,7 @@ fi
 # Export environment for subshell module scripts
 # ════════════════════════════════════════════
 
-export DOTFILES_DIR DRY_RUN VERBOSE FORCE BACKUP_DIR
+export DOTFILES_DIR DRY_RUN VERBOSE FORCE COPY_MODE BACKUP_DIR
 
 # ════════════════════════════════════════════
 # Install modules
