@@ -86,7 +86,7 @@ CLAUDE_SOURCE_DIR="$DOTFILES_DIR/.claude"
 CLAUDE_TARGET_DIR="$HOME/.claude"
 
 # Settings files to install
-SETTINGS_FILES=("settings.json" "settings.local.json")
+SETTINGS_FILES=("settings.json" "settings.local.json" "claude-powerline.json")
 
 echo -e "${BLUE}══════════════════════════════════════════${NC}"
 echo -e "${BLUE}   Claude Code Settings Import${NC}"
@@ -332,8 +332,8 @@ else
     echo -e "${GREEN}done${NC}"
     actions_taken+=("Installed: @owloops/claude-powerline")
   else
-    echo -e "${YELLOW}failed (will use npx fallback)${NC}"
-    echo -e "    ${YELLOW}Note: Status line will work via npx but may be slower${NC}"
+    echo -e "${YELLOW}failed${NC}"
+    echo -e "    ${YELLOW}Note: settings.json expects 'claude-powerline' on PATH — statusline will not render until this install succeeds${NC}"
   fi
 fi
 
@@ -359,6 +359,7 @@ echo ""
 echo "Installed configuration:"
 echo "  • Settings: ~/.claude/settings.json"
 echo "  • Local settings: ~/.claude/settings.local.json"
+echo "  • Powerline config: ~/.claude/claude-powerline.json"
 echo "  • Marketplaces: claude-plugins-official, every-marketplace, xclaude-plugin, obsidian-skills, ui-ux-pro-max-skill"
 echo "  • Plugins: compound-engineering, superpowers, swift-lsp, obsidian, ui-ux-pro-max, xclaude-plugin"
 echo "  • Status line: rose-pine powerline theme"

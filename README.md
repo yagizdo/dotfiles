@@ -152,6 +152,8 @@ dotfiles/
 ├── claude/             # Claude Code settings
 │   ├── settings.json
 │   ├── settings.local.json
+│   ├── claude-powerline.json
+│   ├── CLAUDE.md
 │   └── install.sh
 ├── ssh/                # SSH key setup
 │   ├── ssh.sh

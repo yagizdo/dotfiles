@@ -12,7 +12,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "npx -y @owloops/claude-powerline@latest --theme=rose-pine --style=powerline"
+    "command": "claude-powerline --theme=rose-pine --style=powerline"
   },
   "enabledPlugins": {
     "context7@claude-plugins-official": false,

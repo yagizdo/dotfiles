@@ -12,7 +12,7 @@
 .NOTES
     Prerequisites installed via winget:
       - Anthropic.ClaudeCode
-      - OpenJS.NodeJS.LTS   (needed for statusline: npx @owloops/claude-powerline)
+      - OpenJS.NodeJS.LTS   (needed for statusline: @owloops/claude-powerline)
       - Git.Git             (Claude Code uses Git Bash internally)
       - GitHub.cli          (some plugins / skills shell out to `gh`)
 #>
@@ -95,8 +95,9 @@ if (-not (Test-Path $targetDir)) {
 }
 
 $links = @(
-    @{ Source = Join-Path $SourceDir 'settings.json'; Target = Join-Path $targetDir 'settings.json' }
-    @{ Source = Join-Path $SourceDir 'CLAUDE.md';     Target = Join-Path $targetDir 'CLAUDE.md'     }
+    @{ Source = Join-Path $SourceDir 'settings.json';          Target = Join-Path $targetDir 'settings.json'          }
+    @{ Source = Join-Path $SourceDir 'CLAUDE.md';              Target = Join-Path $targetDir 'CLAUDE.md'              }
+    @{ Source = Join-Path $SourceDir 'claude-powerline.json';  Target = Join-Path $targetDir 'claude-powerline.json'  }
 )
 
 foreach ($link in $links) {
@@ -122,6 +123,26 @@ foreach ($link in $links) {
 
     New-Item -ItemType SymbolicLink -Path $dst -Target $src -Force | Out-Null
     Write-Ok "$dst -> $src"
+}
+
+# --- Install claude-powerline globally --------------------------------------
+Write-Header 'Installing claude-powerline (npm global)'
+
+if (Get-Command npm -ErrorAction SilentlyContinue) {
+    $plInstalled = npm list -g --depth=0 2>$null | Select-String -Pattern '@owloops/claude-powerline' -Quiet
+    if ($plInstalled) {
+        Write-Ok '@owloops/claude-powerline already installed'
+    } else {
+        Write-Info 'Installing @owloops/claude-powerline globally...'
+        npm install -g '@owloops/claude-powerline'
+        if ($LASTEXITCODE -eq 0) {
+            Write-Ok '@owloops/claude-powerline installed'
+        } else {
+            Write-Warn "npm install returned $LASTEXITCODE - statusline may not work until resolved"
+        }
+    }
+} else {
+    Write-Warn 'npm not found on PATH yet. Restart terminal and run: npm install -g @owloops/claude-powerline'
 }
 
 Write-Header 'Done'

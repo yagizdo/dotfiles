@@ -1,0 +1,35 @@
+{
+  "display": {
+    "lines": [
+      {
+        "segments": {
+          "directory": {
+            "enabled": true,
+            "style": "basename"
+          },
+          "git": {
+            "enabled": true
+          },
+          "model": {
+            "enabled": true
+          },
+          "session": {
+            "enabled": true,
+            "type": "tokens",
+            "costSource": "calculated"
+          },
+          "today": {
+            "enabled": false
+          },
+          "context": {
+            "enabled": true,
+            "showPercentageOnly": false,
+            "displayStyle": "blocks",
+            "autocompactBuffer": 33000,
+            "percentageMode": "used"
+          }
+        }
+      }
+    ]
+  }
+}
