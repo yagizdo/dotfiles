@@ -1,17 +1,31 @@
 #!/bin/bash
-# Auto-dump Brewfile before commit so repo always mirrors installed packages.
+# Auto-dump Brewfile and sync Claude configs before commit so repo mirrors reality.
 set -eo pipefail
 
-if ! command -v brew &>/dev/null; then
-  exit 0
-fi
-
 REPO_ROOT="$(git rev-parse --show-toplevel)"
-BREWFILE="$REPO_ROOT/homebrew/Brewfile"
 
-brew bundle dump --file="$BREWFILE" --force >/dev/null
-
-if ! git diff --quiet -- "$BREWFILE"; then
-  git add "$BREWFILE"
-  echo "[pre-commit] Brewfile updated and staged"
+# ── Brewfile ────────────────────────────────────────────────
+if command -v brew &>/dev/null; then
+  BREWFILE="$REPO_ROOT/homebrew/Brewfile"
+  brew bundle dump --file="$BREWFILE" --force >/dev/null
+  if ! git diff --quiet -- "$BREWFILE"; then
+    git add "$BREWFILE"
+    echo "[pre-commit] Brewfile updated and staged"
+  fi
 fi
+
+# ── Claude configs ──────────────────────────────────────────
+# If a tracked Claude config in ~/.claude/ is a regular file (symlink broken),
+# copy it into the repo so edits don't get lost.
+CLAUDE_SRC="$HOME/.claude"
+CLAUDE_DEST="$REPO_ROOT/.claude"
+for file in settings.json settings.local.json claude-powerline.json CLAUDE.md; do
+  src="$CLAUDE_SRC/$file"
+  dest="$CLAUDE_DEST/$file"
+  [[ -f "$src" && ! -L "$src" && -f "$dest" ]] || continue
+  if ! cmp -s "$src" "$dest"; then
+    cp "$src" "$dest"
+    git add "$dest"
+    echo "[pre-commit] Claude config synced: $file"
+  fi
+done
