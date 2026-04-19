@@ -16,7 +16,7 @@
   },
   "enabledPlugins": {
     "context7@claude-plugins-official": false,
-    "compound-engineering@every-marketplace": true,
+    "compound-engineering@every-marketplace": false,
     "swift-lsp@claude-plugins-official": true,
     "superpowers@claude-plugins-official": true,
     "xclaude-plugin@xclaude-plugin-marketplace": true,
@@ -56,11 +56,13 @@
       }
     }
   },
-  "effortLevel": "medium",
-  "voiceEnabled": true,
+  "effortLevel": "xhigh",
+  "tui": "fullscreen",
   "voice": {
     "enabled": true,
     "mode": "hold"
   },
+  "skipAutoPermissionPrompt": true,
+  "voiceEnabled": true,
   "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
 }
