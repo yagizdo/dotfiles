@@ -8,7 +8,6 @@ The modular install story has accumulated inconsistencies and duplication. Needs
 
 - **Duplication between `bootstrap.sh -m claude` and `claude-code-setup.sh`**
   - Both install settings files; `claude/install.sh` now delegates, but the two scripts still have independent logic (backup, symlink vs copy, file list).
-  - `claude-code-setup.sh` installs `settings.local.json`; the rest of the bootstrap system doesn't know about it.
   - Pick one: either bootstrap owns config install and setup.sh only does plugins/powerline, or setup.sh is the single entrypoint and bootstrap just calls it.
 
 - **Source path inconsistency**

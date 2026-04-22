@@ -86,7 +86,7 @@ CLAUDE_SOURCE_DIR="$DOTFILES_DIR/.claude"
 CLAUDE_TARGET_DIR="$HOME/.claude"
 
 # Settings files to install
-SETTINGS_FILES=("settings.json" "settings.local.json" "claude-powerline.json")
+SETTINGS_FILES=("settings.json" "claude-powerline.json")
 
 echo -e "${BLUE}══════════════════════════════════════════${NC}"
 echo -e "${BLUE}   Claude Code Settings Import${NC}"
@@ -358,7 +358,6 @@ fi
 echo ""
 echo "Installed configuration:"
 echo "  • Settings: ~/.claude/settings.json"
-echo "  • Local settings: ~/.claude/settings.local.json"
 echo "  • Powerline config: ~/.claude/claude-powerline.json"
 echo "  • Marketplaces: claude-plugins-official, every-marketplace, xclaude-plugin, obsidian-skills, ui-ux-pro-max-skill"
 echo "  • Plugins: compound-engineering, superpowers, swift-lsp, obsidian, ui-ux-pro-max, xclaude-plugin"

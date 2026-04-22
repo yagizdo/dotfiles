@@ -151,7 +151,6 @@ dotfiles/
 │   └── install.sh
 ├── claude/             # Claude Code settings
 │   ├── settings.json
-│   ├── settings.local.json
 │   ├── claude-powerline.json
 │   ├── CLAUDE.md
 │   └── install.sh

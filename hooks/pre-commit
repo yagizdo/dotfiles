@@ -19,7 +19,7 @@ fi
 # copy it into the repo so edits don't get lost.
 CLAUDE_SRC="$HOME/.claude"
 CLAUDE_DEST="$REPO_ROOT/.claude"
-for file in settings.json settings.local.json claude-powerline.json CLAUDE.md; do
+for file in settings.json claude-powerline.json CLAUDE.md; do
   src="$CLAUDE_SRC/$file"
   dest="$CLAUDE_DEST/$file"
   [[ -f "$src" && ! -L "$src" && -f "$dest" ]] || continue
