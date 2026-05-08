@@ -1,21 +1,18 @@
 # Dotfiles
 
-Personal dotfiles for Flutter/mobile development on macOS.
+Personal dotfiles for Flutter / mobile development on macOS.
 
-## What's Included
+Two modes for everything:
 
-- **Shell**: ZSH with Zinit plugins, Oh-My-Posh prompt
-- **Editor**: VS Code (Flutter extensions)
-- **Flutter**: FVM setup, CocoaPods, scrcpy
-- **AI**: Claude Code configuration
-- **Git**: SSH key setup, global gitconfig, gitignore
+- **sync** (default) — install or update configs, idempotent.
+- **fresh** (`--fresh`) — wipe existing configs, uninstall + reinstall the program from scratch, then re-apply configs.
 
-## Clean Install
+## Quick start
 
-On a fresh machine:
+Fresh machine, one-liner:
 
 ```bash
-bash <(curl -sL https://raw.githubusercontent.com/yagizdo/dotfiles/master/install.sh) --all
+bash <(curl -sL https://raw.githubusercontent.com/yagizdo/dotfiles/master/install.sh) --all --fresh
 ```
 
 Or manually:
@@ -23,187 +20,123 @@ Or manually:
 ```bash
 git clone git@github.com:yagizdo/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
-chmod +x bootstrap.sh
-./bootstrap.sh --all
+./setup --all --fresh
 ```
 
 ## Usage
 
 ```bash
-./bootstrap.sh                        # show help
-./bootstrap.sh --all                  # install everything
-./bootstrap.sh --core                 # install core (homebrew, zsh, git)
-./bootstrap.sh --dry-run --all       # preview all changes
+./setup                          # show help
+./setup --all                    # sync everything (default mode)
+./setup --all --fresh            # nuke + reinstall everything
+./setup --core                   # sync core: homebrew, zsh, git
+./setup claude                   # sync only Claude Code
+./setup claude --fresh           # nuke + reinstall Claude Code (plugins, settings, powerline)
+./setup zsh vscode               # sync multiple modules
+./setup --dry-run --all --fresh  # preview a fresh install
 ```
 
-### Install specific modules
-
-```bash
-./bootstrap.sh -m zsh                 # install a single module
-./bootstrap.sh -m zsh -m vscode      # install multiple modules
-./bootstrap.sh -m claude              # install just Claude Code config
-./bootstrap.sh --dry-run -m zsh      # preview what a module would do
-```
-
-You can combine `-m` flags to install any combination. Use `--dry-run` to preview changes before applying.
+You can pass module names as positional args (`./setup claude`) or with `-m` (`./setup -m claude -m zsh`). They're equivalent.
 
 ### Flags
 
-| Flag | Description |
-|------|-------------|
+| Flag | What it does |
+|------|--------------|
 | `-m, --module <name>` | Install a specific module (repeatable) |
 | `-a, --all` | Install all modules |
-| `--core` | Install core modules only |
-| `-n, --dry-run` | Show what would happen without changes |
+| `--core` | Install core modules only (homebrew, zsh, git) |
+| `-F, --fresh` | Fresh install: remove existing configs and reinstall programs |
+| `-n, --dry-run` | Show what would happen without making changes |
 | `-v, --verbose` | Verbose output |
-| `-f, --force` | Overwrite without backup |
-| `-h, --help` | Show help message |
+| `-f, --force` | Overwrite existing files without backup |
+| `-c, --copy` | Copy files instead of symlinking (for disposable clones) |
+| `-h, --help` | Show help |
 
-### Available Modules
+### Modules
 
-| Module | Core? | Description |
-|--------|-------|-------------|
-| `homebrew` | Yes | Homebrew package manager and Brewfile |
-| `zsh` | Yes | ZSH config with Zinit plugins |
-| `git` | Yes | Git config and global gitignore |
-| `oh-my-posh` | No | Oh My Posh prompt theme |
-| `vscode` | No | VS Code settings |
-| `ssh` | No | SSH key setup (interactive) |
-| `claude` | No | Claude Code settings |
-| `ghostty` | No | Ghostty terminal config |
-| `zellij` | No | Zellij multiplexer config |
+| Module | Core? | What sync does | What `--fresh` adds on top |
+|--------|-------|----------------|------------------------------|
+| `homebrew` | ✓ | Install Homebrew, run Brewfile | `brew bundle cleanup --force` then reinstall everything |
+| `zsh` | ✓ | Link `.zshrc`/`.zprofile`, install Zinit | Remove old configs, delete Zinit, reinstall |
+| `git` | ✓ | Link `.gitconfig`, `.gitignore_global` | Remove existing symlinks (preserves `.gitconfig.local`) |
+| `claude` | | Settings, marketplaces, plugins, powerline | Uninstall all plugins, remove marketplaces, reinstall Claude CLI cask + powerline |
+| `oh-my-posh` | | Link prompt theme | brew reinstall oh-my-posh |
+| `vscode` | | Link `settings.json`, install extensions | Uninstall all extensions, reinstall from `extensions.txt` |
+| `ssh` | | Interactive key setup if missing | SSH keys are NOT auto-deleted (manual step required) |
+| `ghostty` | | Link Ghostty config | Remove config symlink |
+| `zellij` | | Link Zellij config + layouts | Remove config symlinks |
+| `fvm` | | Install FVM, configure editor SDK path | brew reinstall fvm, reset editor SDK setting |
 
-## Local Configuration
+`--fresh` always prompts for confirmation in interactive shells. Backups go to `~/.dotfiles-backup/<timestamp>/`.
+
+## Local configuration
 
 ### Machine-specific shell config
 
-Add machine-specific settings to `~/.zshrc.local` (not tracked by git):
+Add machine-specific settings to `~/.zshrc.local` (not tracked):
 
 ```bash
-# Example ~/.zshrc.local
 export WORK_API_KEY="..."
 alias deploy="ssh deploy@work-server"
 ```
 
 ### Git credentials
 
-Git credentials are kept out of the repo via `~/.gitconfig.local`:
+Kept out of the repo via `~/.gitconfig.local`:
 
 ```bash
-# Run the setup helper
 ./git/setup-git.sh
-
-# Or manually
-git config --global user.name "Your Name"
-git config --global user.email "your@email.com"
 ```
 
-## Manual Steps After Bootstrap
+`--fresh` on the `git` module preserves `~/.gitconfig.local`.
 
-1. Install VS Code extensions:
-   ```bash
-   cat ~/.dotfiles/vscode/extensions.txt | xargs -L 1 code --install-extension
-   ```
-
-## Git SSH Setup
-
-Generate SSH key:
+## Git SSH setup
 
 ```bash
-./bootstrap.sh -m ssh
+./setup ssh
 # or directly:
 ./ssh/ssh.sh your@email.com
 ```
 
-Copy and add to GitHub:
+Then add the public key to GitHub:
 
 ```bash
 pbcopy < ~/.ssh/id_ed25519.pub
-# Add at: https://github.com/settings/ssh/new
+# https://github.com/settings/ssh/new
 ```
 
-## File Structure
+## File structure
 
 ```
 dotfiles/
-├── lib/                # Shared libraries
-│   ├── helpers.sh      # Color, logging, link_file utilities
-│   └── modules.sh      # Module registry and resolution
-├── zsh/                # Shell configuration
-│   ├── .zshrc          # Main config with Zinit
-│   ├── .zprofile       # Homebrew init
-│   ├── aliases.zsh     # Custom aliases
-│   ├── path.zsh        # PATH configuration
-│   ├── exports.zsh     # Environment variables
-│   └── install.sh      # Module installer
-├── homebrew/           # Homebrew packages
-│   ├── Brewfile        # Core packages
-│   ├── Brewfile.flutter # Flutter packages
-│   └── install.sh      # Module installer
-├── vscode/             # VS Code settings
-│   ├── settings.json
-│   ├── extensions.json
-│   ├── extensions.txt
-│   └── install.sh
-├── oh-my-posh/         # Prompt theme
-│   ├── theme.omp.json
-│   └── install.sh
-├── claude/             # Claude Code settings
-│   ├── settings.json
-│   ├── claude-powerline.json
-│   ├── CLAUDE.md
-│   └── install.sh
-├── ssh/                # SSH key setup
-│   ├── ssh.sh
-│   └── install.sh
-├── git/                # Git configuration
-│   ├── .gitconfig
-│   ├── .gitignore_global
-│   ├── setup-git.sh
-│   └── install.sh
-├── ghostty/            # Ghostty terminal
-│   └── install.sh
-├── zellij/             # Zellij multiplexer
-│   ├── config.kdl
-│   ├── layouts/
-│   │   └── quiver.kdl
-│   └── install.sh
-├── bootstrap.sh        # Main modular installer
-├── install.sh          # One-liner entry point for fresh machines
-├── claude-code-setup.sh # Claude Code full setup (plugins, powerline)
-└── README.md
+├── setup                # Main entry point — invoke this
+├── install.sh           # curl one-liner for fresh machines
+├── lib/
+│   ├── helpers.sh       # link_file, log_*, fresh helpers
+│   └── modules.sh       # Module registry
+├── homebrew/install.sh
+├── zsh/install.sh
+├── git/install.sh
+├── claude/install.sh    # Settings + plugins + marketplaces + powerline
+├── oh-my-posh/install.sh
+├── vscode/install.sh
+├── ssh/install.sh
+├── ghostty/install.sh
+├── zellij/install.sh
+└── fvm/install.sh
 ```
-
-## Key Bindings
-
-### Shell Aliases
-
-| Alias | Command |
-|-------|---------|
-| `f` | `flutter` |
-| `fp` | `flutter pub get` |
-| `fr` | `flutter run` |
-| `fc` | `flutter clean` |
-| `gs` | `git status` |
-| `glog` | `git log --oneline --graph` |
-| `vim` | `nvim` |
-| `ll` | `eza -l --icons` |
-
-## Troubleshooting
-
-### Symlinks not created
-Bootstrap backs up existing files to `~/.dotfiles-backup/`. Check that directory if something looks wrong.
-
-### Homebrew on Linux
-The bootstrap script auto-detects the OS and uses the correct Homebrew path (`/home/linuxbrew/.linuxbrew` on Linux).
-
-### Bootstrap from non-standard location
-The repo auto-detects its own location — you can clone it anywhere, not just `~/.dotfiles`.
 
 ## Updating
 
 ```bash
-cd ~/.dotfiles  # or wherever you cloned it
+cd ~/.dotfiles
 git pull
-./bootstrap.sh --all
+./setup --all          # sync mode — picks up any new configs
 ```
+
+## Troubleshooting
+
+- **Backup of an old file**: check `~/.dotfiles-backup/<timestamp>/`
+- **Bootstrap from a non-standard location**: the repo auto-detects its own path, clone anywhere
+- **Linux Homebrew**: auto-detected (`/home/linuxbrew/.linuxbrew`)
+- **macOS keyboard tweaks**: see `macos/keyboard-modifiers.md` (manual System Settings step)

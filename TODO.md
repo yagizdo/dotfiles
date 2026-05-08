@@ -1,48 +1,17 @@
 # TODO
 
-## Refactor: Modular install foundation
+## Verify on a fresh VM
 
-The modular install story has accumulated inconsistencies and duplication. Needs a proper refactor pass.
+The new `setup` + `--fresh` flow needs a clean-machine pass before it can be trusted end-to-end:
 
-### Known issues
+- [ ] `./setup --all` on a fresh macOS — verify every module installs cleanly
+- [ ] `./setup --all --fresh` on an already-set-up machine — verify reset works without losing critical state (SSH keys, `.gitconfig.local`, `~/fvm/versions`)
+- [ ] `./setup --all --copy` — verify copy mode still works after the refactor
+- [ ] Linux: smoke-test `homebrew`, `zsh`, `git` modules
 
-- **Duplication between `bootstrap.sh -m claude` and `claude-code-setup.sh`**
-  - Both install settings files; `claude/install.sh` now delegates, but the two scripts still have independent logic (backup, symlink vs copy, file list).
-  - Pick one: either bootstrap owns config install and setup.sh only does plugins/powerline, or setup.sh is the single entrypoint and bootstrap just calls it.
+## Known limitations
 
-- **Source path inconsistency**
-  - Claude configs live in `.claude/` (dot-prefixed, hidden).
-  - Other modules use plain dirs: `zsh/`, `vscode/`, `ghostty/`.
-  - `claude/` dir only holds scripts, not configs — confusing. Unify the layout.
-
-- **`--copy` mode retrofitted, not designed in**
-  - Added to `lib/helpers.sh::link_file` and `bootstrap.sh` as a flag.
-  - Each module's `install.sh` has to pass the mode through manually (see `claude/install.sh` building `$SETUP_FLAG`).
-  - Other modules (ghostty, zellij, zsh, vscode) also use `link_file` and will silently respect `--copy` — untested. Verify every module works in copy mode.
-
-- **CLI install responsibility is unclear**
-  - `claude/install.sh` now installs the Claude Code CLI via brew if missing — but `homebrew/install.sh` also installs it via Brewfile.
-  - Decide: do modules own their binary deps, or does the `homebrew` module own everything? Current state is a hybrid.
-
-- **No module dependency declaration**
-  - `claude` implicitly depends on brew being present.
-  - `vscode` depends on `code` CLI.
-  - `ssh` is interactive.
-  - No declared DAG — `bootstrap.sh --core` just hardcodes order.
-
-- **Backup strategy split**
-  - `lib/helpers.sh` backs up to `~/.dotfiles-backup/<timestamp>/`.
-  - `claude-code-setup.sh` backs up to `~/.claude/backup/<file>.<timestamp>`.
-  - Pick one convention.
-
-### Proposed direction (not decided)
-
-1. One shared install primitive in `lib/helpers.sh` (`install_file` handling symlink+copy+backup uniformly).
-2. Every module has a single `install.sh` — no standalone scripts at repo root.
-3. `claude-code-setup.sh` becomes a helper sourced by the module, not a parallel entrypoint.
-4. Move `.claude/` → `claude/configs/` so layout matches other modules.
-5. Declarative module manifest (deps, core flag, interactive flag) instead of scattered logic.
-
-### Why not now
-
-Works for current use cases (home machine symlink, work PC copy). Refactor needs a dedicated session + test pass across all modules on a fresh VM.
+- **SSH keys are never auto-deleted.** `--fresh` on the `ssh` module just warns. Intentional: regenerating keys silently is too risky.
+- **Homebrew itself is preserved on `--fresh`.** Removing brew would also remove every package and break the rest of the run.
+- **`~/fvm/versions` (cached Flutter SDKs) is preserved.** `fvm --fresh` only reinstalls the `fvm` binary; cached SDKs stay.
+- **VS Code extensions on `--fresh` require `code` on PATH.** If `code` isn't installed, extension reset is silently skipped.
