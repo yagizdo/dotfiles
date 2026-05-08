@@ -1,6 +1,16 @@
-// Zellij config - using defaults for keybinds (no clear-defaults)
+// Zellij config
 // Ctrl+g → locked, Ctrl+p → pane, Ctrl+t → tab, Ctrl+n → resize,
-// Ctrl+s → scroll, Ctrl+o → session, Ctrl+h → move
+// Ctrl+s → scroll, Alt+s → session, Ctrl+h → move
+
+keybinds {
+    shared_except "locked" {
+        unbind "Alt Left" "Alt Right" "Alt Up" "Alt Down"
+        // macOS terminals send Alt+Arrow as ESC+f / ESC+b, so unbind these too.
+        // Without this, Alt+Right triggers ToggleFloatingPanes via the Alt f default binding.
+        unbind "Alt f" "Alt b"
+        unbind "Ctrl o"
+    }
+}
 
 // Shell
 default_shell "zsh"
