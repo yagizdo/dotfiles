@@ -1,15 +1,22 @@
 #!/bin/bash
-# Module: fvm — Install FVM and configure editor/global settings
+# Module: fvm — Install FVM and configure editor SDK paths
+#
+# fresh: brew uninstalls + reinstalls fvm, removes dart.flutterSdkPath from
+#        editor settings before re-adding it.
+#        Note: ~/fvm (installed Flutter versions) is preserved — fvm reinstall
+#        does not delete cached SDKs.
 set -eo pipefail
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/lib/helpers.sh"
 
 log_header "FVM (Flutter Version Management)"
 
 # ════════════════════════════════════════════
-# Install FVM via Homebrew
+# Install FVM
 # ════════════════════════════════════════════
 
-if ! command -v fvm &>/dev/null; then
+if is_fresh; then
+  brew_reinstall formula "leoafarias/fvm/fvm"
+elif ! command -v fvm &>/dev/null; then
   if dry_run "Would install fvm via Homebrew"; then
     :
   else
@@ -22,11 +29,11 @@ else
 fi
 
 # ════════════════════════════════════════════
-# Editor SDK path (VS Code + Antigravity)
+# Editor SDK path
 # ════════════════════════════════════════════
 
-# Use FVM global default symlink for editor-wide settings
-# Per-project .fvm/flutter_sdk overrides this automatically
+# Use FVM global default symlink for editor-wide settings.
+# Per-project .fvm/flutter_sdk overrides this automatically.
 FVM_SDK_PATH="$HOME/fvm/default"
 
 setup_editor_fvm() {
@@ -39,8 +46,19 @@ setup_editor_fvm() {
   fi
 
   if grep -q '"dart.flutterSdkPath"' "$settings_file" 2>/dev/null; then
-    log_ok "$editor_name: dart.flutterSdkPath already configured"
-    return 0
+    if is_fresh; then
+      if dry_run "Would remove dart.flutterSdkPath from $editor_name"; then
+        return 0
+      fi
+      # Remove existing dart.flutterSdkPath line; trailing comma cleanup
+      sed -i '' '/"dart.flutterSdkPath"/d' "$settings_file"
+      # Cleanup dangling commas before closing brace
+      sed -i '' -e ':a' -e '$!{N;ba' -e '}' -e 's/,\s*}/}/g' "$settings_file"
+      log_fresh "$editor_name: removed dart.flutterSdkPath"
+    else
+      log_ok "$editor_name: dart.flutterSdkPath already configured"
+      return 0
+    fi
   fi
 
   if dry_run "Would add dart.flutterSdkPath to $editor_name settings"; then
@@ -50,8 +68,7 @@ setup_editor_fvm() {
   # Insert dart.flutterSdkPath before the last closing brace
   local tmp
   tmp=$(mktemp)
-  sed '$ s/}$//' "$settings_file" | sed -e :a -e '/^\n*$/{$d;N;ba}' > "$tmp"
-  # Add comma if needed
+  sed '$ s/}$//' "$settings_file" | sed -e :a -e '/^\n*$/{$d;N;ba' -e '}' > "$tmp"
   local last_line
   last_line=$(grep -v '^\s*$' "$tmp" | tail -1)
   if [[ "$last_line" != *"," ]] && [[ "$last_line" != *"{" ]]; then
@@ -68,22 +85,14 @@ EOF
 setup_editor_fvm "VS Code" "$DOTFILES_DIR/vscode/settings.json"
 
 # ════════════════════════════════════════════
-# .gitignore recommendation
-# ════════════════════════════════════════════
-
-log_info "Remember to add these to project .gitignore:"
-echo "  .fvm/flutter_sdk"
-echo "  .fvm/versions"
-
-# ════════════════════════════════════════════
 # Usage info
 # ════════════════════════════════════════════
 
 if [[ "$DRY_RUN" != "true" ]]; then
   echo ""
+  log_info "Add to project .gitignore:  .fvm/flutter_sdk  .fvm/versions"
   log_info "FVM usage:"
   echo "  fvm install stable        # install latest stable Flutter"
   echo "  fvm global stable         # set global Flutter version"
   echo "  fvm use stable            # set project Flutter version"
-  echo "  fvm list                  # list installed versions"
 fi

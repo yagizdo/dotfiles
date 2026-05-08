@@ -1,5 +1,9 @@
 #!/bin/bash
 # Module: homebrew — Install Homebrew and run Brewfile
+#
+# fresh: runs `brew bundle --cleanup` to remove anything not in our Brewfile
+#        before reinstalling. Homebrew itself is preserved (too disruptive
+#        to remove and everything depends on it).
 set -eo pipefail
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/lib/helpers.sh"
 
@@ -25,14 +29,26 @@ else
   log_ok "Homebrew already installed"
 fi
 
-# Run Brewfile
-if dry_run "Would run brew bundle with $DOTFILES_DIR/homebrew/Brewfile"; then
-  :
+# Fresh: remove everything not in our Brewfile, then reinstall
+if is_fresh; then
+  if dry_run "Would run brew bundle cleanup --force"; then
+    :
+  else
+    log_fresh "Removing packages not in Brewfile..."
+    brew bundle cleanup --force --file="$DOTFILES_DIR/homebrew/Brewfile" || true
+    log_fresh "Reinstalling packages from Brewfile..."
+    brew bundle --force --file="$DOTFILES_DIR/homebrew/Brewfile"
+    log_ok "Brewfile reinstalled"
+  fi
 else
-  log_info "Installing packages from Brewfile..."
-  brew update
-  brew bundle --file="$DOTFILES_DIR/homebrew/Brewfile"
-  log_ok "Brewfile packages installed"
+  if dry_run "Would run brew bundle with $DOTFILES_DIR/homebrew/Brewfile"; then
+    :
+  else
+    log_info "Installing packages from Brewfile..."
+    brew update
+    brew bundle --file="$DOTFILES_DIR/homebrew/Brewfile"
+    log_ok "Brewfile packages installed"
+  fi
 fi
 
 # Enable tracked git hooks (pre-commit auto-dumps Brewfile)

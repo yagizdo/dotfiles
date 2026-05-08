@@ -1,9 +1,18 @@
 #!/bin/bash
 # Module: zsh — Link shell config and install Zinit
+#
+# fresh: removes ~/.zshrc, ~/.zprofile, and Zinit before reinstalling
 set -eo pipefail
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/lib/helpers.sh"
 
 log_header "ZSH"
+
+if is_fresh; then
+  remove_path "$HOME/.zshrc"
+  remove_path "$HOME/.zprofile"
+  remove_path "$HOME/.local/share/zinit"
+  remove_path "$HOME/.zcompdump"
+fi
 
 link_file "$DOTFILES_DIR/zsh/.zshrc" "$HOME/.zshrc"
 link_file "$DOTFILES_DIR/zsh/.zprofile" "$HOME/.zprofile"
