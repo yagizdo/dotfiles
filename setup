@@ -1,11 +1,11 @@
 #!/bin/bash
-# Modular dotfiles installer
-# Usage: ./bootstrap.sh [OPTIONS] [module ...]
+# Dotfiles installer
+# Usage: ./setup [OPTIONS] [module ...]
+#
+# Two modes:
+#   sync   (default)  install/update configs only
+#   fresh  (--fresh)  wipe existing configs and reinstall the program from scratch
 set -eo pipefail
-
-# ════════════════════════════════════════════
-# Load libraries
-# ════════════════════════════════════════════
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export DOTFILES_DIR
@@ -22,7 +22,7 @@ source "$DOTFILES_DIR/lib/modules.sh"
 cleanup() {
   local exit_code=$?
   if [[ $exit_code -ne 0 ]]; then
-    log_error "Bootstrap failed (exit code $exit_code)"
+    log_error "Setup failed (exit code $exit_code)"
   fi
 }
 trap cleanup EXIT
@@ -33,27 +33,34 @@ trap cleanup EXIT
 
 usage() {
   cat <<EOF
+${BOLD}Dotfiles installer${NC}
+
 Usage: $(basename "$0") [OPTIONS] [module ...]
 
-Modular dotfiles installer. Install individual modules or groups.
+${BOLD}Modes:${NC}
+  sync   (default)  install or update configs (idempotent symlinks)
+  fresh  --fresh    remove existing configs, uninstall + reinstall the program,
+                    then install configs from scratch
 
-Options:
+${BOLD}Options:${NC}
   -m, --module <name>   Install a specific module (repeatable)
   -a, --all             Install all modules
       --core            Install core modules only (homebrew, zsh, git)
+  -F, --fresh           Fresh install: wipe configs and reinstall programs
   -n, --dry-run         Show what would happen without making changes
   -v, --verbose         Verbose output
   -f, --force           Overwrite without backup
   -c, --copy            Copy files instead of symlinking (for disposable clones)
   -h, --help            Show this help message
 
-Examples:
+${BOLD}Examples:${NC}
   $(basename "$0")                        # show this help
-  $(basename "$0") --all                  # install everything
-  $(basename "$0") --core                 # install core (homebrew, zsh, git)
-  $(basename "$0") -m zsh -m vscode      # install specific modules
-  $(basename "$0") -m claude              # install just Claude Code config
-  $(basename "$0") --dry-run --all       # preview all changes
+  $(basename "$0") --all                  # sync everything (default)
+  $(basename "$0") --all --fresh          # wipe and reinstall everything
+  $(basename "$0") claude                 # sync only Claude Code config
+  $(basename "$0") claude --fresh         # nuke and reinstall Claude Code
+  $(basename "$0") zsh vscode             # sync multiple modules
+  $(basename "$0") --dry-run --all --fresh  # preview a fresh install
 
 EOF
   list_modules
@@ -85,6 +92,10 @@ while [[ $# -gt 0 ]]; do
       MODE="core"
       shift
       ;;
+    -F|--fresh)
+      FRESH="true"
+      shift
+      ;;
     -n|--dry-run)
       DRY_RUN="true"
       shift
@@ -111,7 +122,6 @@ while [[ $# -gt 0 ]]; do
       exit 1
       ;;
     *)
-      # Positional args treated as module names
       MODULES+=("$1")
       MODE="specific"
       shift
@@ -119,7 +129,6 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# No flags = show help
 if [[ -z "$MODE" ]]; then
   usage
   exit 0
@@ -161,10 +170,33 @@ else
   resolve_modules "$MODE"
 fi
 
-# Validate all modules
 for mod in "${RESOLVED_MODULES[@]}"; do
   validate_module "$mod"
 done
+
+# ════════════════════════════════════════════
+# Fresh-mode confirmation
+# ════════════════════════════════════════════
+
+if is_fresh && [[ "$DRY_RUN" != "true" ]]; then
+  log_header "Fresh Install"
+  log_warn "Fresh mode will:"
+  echo "  • Remove existing configs/symlinks for: ${RESOLVED_MODULES[*]}"
+  echo "  • Uninstall and reinstall associated programs (brew/npm packages)"
+  echo "  • Reset plugins, marketplaces, and editor settings"
+  echo ""
+  log_warn "Backups go to: $BACKUP_DIR"
+  echo ""
+  if [[ -t 0 ]]; then
+    read -rp "Continue? (yes/no) " confirm
+    if [[ "$confirm" != "yes" ]]; then
+      log_info "Aborted by user"
+      exit 0
+    fi
+  else
+    log_warn "Non-interactive shell — proceeding without confirmation"
+  fi
+fi
 
 # ════════════════════════════════════════════
 # Create common directories
@@ -176,16 +208,18 @@ if ! dry_run "Would create ~/.config and ~/workspace"; then
 fi
 
 # ════════════════════════════════════════════
-# Export environment for subshell module scripts
+# Export environment for module scripts
 # ════════════════════════════════════════════
 
-export DOTFILES_DIR DRY_RUN VERBOSE FORCE COPY_MODE BACKUP_DIR
+export DOTFILES_DIR DRY_RUN VERBOSE FORCE COPY_MODE FRESH BACKUP_DIR
 
 # ════════════════════════════════════════════
 # Install modules
 # ════════════════════════════════════════════
 
-log_info "Installing modules: ${RESOLVED_MODULES[*]}"
+mode_label="sync"
+is_fresh && mode_label="fresh"
+log_info "Mode: $mode_label — installing: ${RESOLVED_MODULES[*]}"
 if [[ "$DRY_RUN" == "true" ]]; then
   log_warn "Dry-run mode — no changes will be made"
 fi
@@ -219,4 +253,7 @@ if [[ "$DRY_RUN" != "true" ]]; then
   log_info "Next steps:"
   echo "  1. Restart your shell: exec zsh"
   echo "  2. Open your editor and verify settings"
+  if is_fresh; then
+    echo "  3. Restart Claude Code if you used --fresh on the claude module"
+  fi
 fi

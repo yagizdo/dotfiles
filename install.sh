@@ -1,7 +1,8 @@
 #!/bin/bash
 # One-liner entry point for fresh machines
 # Usage: curl -sL <raw-url> | bash
-#   or:  bash install.sh [--all | --core | -m <module> ...]
+#   or:  curl -sL <raw-url> | bash -s -- --all --fresh
+#   or:  bash install.sh [--all | --core | -m <module> ...] [--fresh]
 
 set -euo pipefail
 
@@ -17,4 +18,4 @@ if [ ! -d "$DOTFILES_DIR" ]; then
 fi
 
 cd "$DOTFILES_DIR"
-bash bootstrap.sh "$@"
+bash setup "$@"

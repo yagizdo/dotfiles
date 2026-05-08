@@ -1,6 +1,6 @@
 #!/bin/bash
 # Shared utility functions for dotfiles installer
-# Sourced by bootstrap.sh and per-module install scripts
+# Sourced by setup and per-module install scripts
 
 # ════════════════════════════════════════════
 # Dotfiles directory detection
@@ -44,16 +44,18 @@ log_ok()     { printf '%b[OK]%b   %s\n' "$GREEN" "$NC" "$*"; }
 log_warn()   { printf '%b[WARN]%b %s\n' "$YELLOW" "$NC" "$*"; }
 log_error()  { printf '%b[ERR]%b  %s\n' "$RED" "$NC" "$*" >&2; }
 log_skip()   { printf '%b[SKIP]%b %s\n' "$YELLOW" "$NC" "$*"; }
+log_fresh()  { printf '%b[FRESH]%b %s\n' "$YELLOW" "$NC" "$*"; }
 log_header() { printf '\n%b══ %s ══%b\n\n' "$BOLD" "$*" "$NC"; }
 
 # ════════════════════════════════════════════
-# Dry-run support
+# Mode flags
 # ════════════════════════════════════════════
 
 DRY_RUN="${DRY_RUN:-false}"
 VERBOSE="${VERBOSE:-false}"
 FORCE="${FORCE:-false}"
 COPY_MODE="${COPY_MODE:-false}"
+FRESH="${FRESH:-false}"
 
 dry_run() {
   if [[ "$DRY_RUN" == "true" ]]; then
@@ -69,6 +71,8 @@ verbose() {
   fi
 }
 
+is_fresh() { [[ "$FRESH" == "true" ]]; }
+
 # ════════════════════════════════════════════
 # link_file — idempotent symlink with backup
 # ════════════════════════════════════════════
@@ -76,7 +80,6 @@ verbose() {
 link_file() {
   local src="$1" dest="$2"
 
-  # Validate source exists
   if [[ ! -e "$src" ]]; then
     log_error "Source does not exist: $src"
     return 1
@@ -109,18 +112,15 @@ link_file() {
       log_warn "Backed up $dest -> $BACKUP_DIR/"
     fi
   elif [[ -L "$dest" ]]; then
-    # Remove stale symlink
     rm "$dest"
   fi
 
-  # Create parent directory if needed
   mkdir -p "$(dirname "$dest")"
 
   if [[ "$COPY_MODE" == "true" ]]; then
     cp -R "$src" "$dest"
     log_ok "$dest (copied from $src)"
   else
-    # Use -sfn for directory symlinks on macOS
     ln -sfn "$src" "$dest"
     log_ok "$dest -> $src"
   fi
@@ -139,4 +139,78 @@ verify_symlink() {
     log_error "$label (NOT LINKED)"
     return 1
   fi
+}
+
+# ════════════════════════════════════════════
+# Fresh-mode helpers
+# ════════════════════════════════════════════
+
+# remove_path — delete file/symlink/directory if it exists
+# Used by --fresh to wipe old configs before reinstalling.
+remove_path() {
+  local path="$1"
+  if [[ -L "$path" ]] || [[ -e "$path" ]]; then
+    if dry_run "Would remove $path"; then
+      return 0
+    fi
+    rm -rf "$path"
+    log_fresh "Removed $path"
+  fi
+}
+
+# brew_reinstall — uninstall+reinstall a brew formula or cask
+# Args: <formula|cask> <name>
+brew_reinstall() {
+  local kind="$1" name="$2"
+  if ! command -v brew &>/dev/null; then
+    log_warn "brew not found, cannot reinstall $name"
+    return 0
+  fi
+
+  if dry_run "Would reinstall $kind $name"; then
+    return 0
+  fi
+
+  case "$kind" in
+    formula)
+      if brew list --formula "$name" &>/dev/null; then
+        log_fresh "Uninstalling $name..."
+        brew uninstall --ignore-dependencies "$name" || true
+      fi
+      log_info "Installing $name..."
+      brew install "$name"
+      ;;
+    cask)
+      if brew list --cask "$name" &>/dev/null; then
+        log_fresh "Uninstalling cask $name..."
+        brew uninstall --cask "$name" || true
+      fi
+      log_info "Installing cask $name..."
+      brew install --cask "$name"
+      ;;
+    *)
+      log_error "Unknown brew kind: $kind"
+      return 1
+      ;;
+  esac
+}
+
+# npm_reinstall_global — uninstall+reinstall a global npm package
+npm_reinstall_global() {
+  local pkg="$1"
+  if ! command -v npm &>/dev/null; then
+    log_warn "npm not found, cannot reinstall $pkg"
+    return 0
+  fi
+
+  if dry_run "Would reinstall global npm package $pkg"; then
+    return 0
+  fi
+
+  if npm list -g "$pkg" &>/dev/null; then
+    log_fresh "Uninstalling global npm $pkg..."
+    npm uninstall -g "$pkg" || true
+  fi
+  log_info "Installing global npm $pkg..."
+  npm install -g "$pkg"
 }

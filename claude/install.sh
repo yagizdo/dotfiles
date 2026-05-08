@@ -1,33 +1,209 @@
 #!/bin/bash
-# Module: claude — Install Claude Code CLI and delegate config+plugins to claude-code-setup.sh
+# Module: claude — Install Claude Code CLI, settings, plugins, marketplaces, and powerline.
+#
+# Modes:
+#   sync  (default) — install/update settings + plugins idempotently
+#   fresh (FRESH=true) — wipe ~/.claude/{settings.json,claude-powerline.json},
+#                         uninstall all plugins, remove marketplaces, reinstall
+#                         Claude CLI cask and claude-powerline npm package
 set -eo pipefail
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/lib/helpers.sh"
 
 log_header "Claude Code"
 
-# Install Claude Code CLI if missing (via Homebrew cask)
-if ! command -v claude &>/dev/null; then
+# ════════════════════════════════════════════
+# Configuration
+# ════════════════════════════════════════════
+
+CLAUDE_SOURCE_DIR="$DOTFILES_DIR/.claude"
+CLAUDE_TARGET_DIR="$HOME/.claude"
+SETTINGS_FILES=(settings.json claude-powerline.json)
+
+MARKETPLACES=(
+  "anthropics/claude-plugins-official"
+  "https://github.com/kieranklaassen/compound-engineering-plugin.git"
+  "conorluddy/xclaude-plugin"
+  "kepano/obsidian-skills"
+  "nextlevelbuilder/ui-ux-pro-max-skill"
+  "yagizdo/quiver"
+)
+
+PLUGINS=(
+  "compound-engineering@every-marketplace"
+  "superpowers@claude-plugins-official"
+  "swift-lsp@claude-plugins-official"
+  "obsidian@obsidian-skills"
+  "ui-ux-pro-max@ui-ux-pro-max-skill"
+  "xclaude-plugin@xclaude-plugin-marketplace"
+  "quiver@quiver"
+)
+
+# ════════════════════════════════════════════
+# Detect Claude CLI
+# ════════════════════════════════════════════
+
+find_claude_cmd() {
+  if command -v claude &>/dev/null; then echo "claude"; return; fi
+  [[ -x /usr/local/bin/claude ]] && { echo /usr/local/bin/claude; return; }
+  [[ -x "$HOME/.local/bin/claude" ]] && { echo "$HOME/.local/bin/claude"; return; }
+  echo ""
+}
+
+# ════════════════════════════════════════════
+# Fresh: wipe everything
+# ════════════════════════════════════════════
+
+fresh_reset() {
+  log_fresh "Resetting Claude Code state"
+
+  # Remove our settings symlinks/files
+  for f in "${SETTINGS_FILES[@]}"; do
+    remove_path "$CLAUDE_TARGET_DIR/$f"
+  done
+
+  local claude_cmd
+  claude_cmd="$(find_claude_cmd)"
+
+  # Uninstall plugins (best-effort; CLI may not be installed yet)
+  if [[ -n "$claude_cmd" ]] && ! dry_run "Would uninstall all Claude plugins"; then
+    for plugin in "${PLUGINS[@]}"; do
+      local name="${plugin%@*}"
+      log_fresh "Uninstalling plugin $name..."
+      "$claude_cmd" plugin uninstall "$plugin" &>/dev/null || true
+    done
+
+    # Remove marketplaces
+    for mp in "${MARKETPLACES[@]}"; do
+      log_fresh "Removing marketplace $mp..."
+      "$claude_cmd" plugin marketplace remove "$mp" &>/dev/null || true
+    done
+  fi
+
+  # Reinstall Claude Code cask
+  if command -v brew &>/dev/null; then
+    brew_reinstall cask "claude-code@latest"
+  fi
+
+  # Reinstall claude-powerline npm package
+  npm_reinstall_global "@owloops/claude-powerline"
+}
+
+# ════════════════════════════════════════════
+# Sync: install settings, marketplaces, plugins
+# ════════════════════════════════════════════
+
+ensure_claude_cli() {
+  if [[ -n "$(find_claude_cmd)" ]]; then
+    return 0
+  fi
+
   if dry_run "Would install claude-code cask via brew"; then
-    :
-  elif command -v brew &>/dev/null; then
+    return 0
+  fi
+
+  if command -v brew &>/dev/null; then
     log_info "Installing Claude Code CLI..."
     brew install --cask claude-code@latest
     log_ok "Claude Code CLI installed"
   else
     log_warn "Homebrew not found. Install Claude Code manually, then re-run this module."
+    return 1
   fi
+}
+
+ensure_powerline() {
+  if ! command -v npm &>/dev/null; then
+    log_warn "npm not found — claude-powerline statusline will not render"
+    return 0
+  fi
+
+  if npm list -g @owloops/claude-powerline &>/dev/null; then
+    log_ok "@owloops/claude-powerline already installed"
+    return 0
+  fi
+
+  if dry_run "Would npm install -g @owloops/claude-powerline"; then
+    return 0
+  fi
+
+  log_info "Installing @owloops/claude-powerline..."
+  if npm install -g @owloops/claude-powerline &>/dev/null; then
+    log_ok "claude-powerline installed"
+  else
+    log_warn "claude-powerline install failed — statusline will not render"
+  fi
+}
+
+install_settings() {
+  mkdir -p "$CLAUDE_TARGET_DIR"
+  for f in "${SETTINGS_FILES[@]}"; do
+    if [[ -f "$CLAUDE_SOURCE_DIR/$f" ]]; then
+      link_file "$CLAUDE_SOURCE_DIR/$f" "$CLAUDE_TARGET_DIR/$f"
+    else
+      log_skip "$f (source not found)"
+    fi
+  done
+}
+
+install_marketplaces_and_plugins() {
+  local claude_cmd
+  claude_cmd="$(find_claude_cmd)"
+  if [[ -z "$claude_cmd" ]]; then
+    log_warn "Claude CLI not available — skipping plugins/marketplaces"
+    return 0
+  fi
+
+  if dry_run "Would add marketplaces and install plugins"; then
+    return 0
+  fi
+
+  local current_mp
+  current_mp="$("$claude_cmd" plugin marketplace list 2>&1 || true)"
+
+  for mp in "${MARKETPLACES[@]}"; do
+    local label="$mp"
+    if echo "$current_mp" | grep -q "$mp" 2>/dev/null; then
+      log_ok "marketplace $label (already added)"
+    else
+      if "$claude_cmd" plugin marketplace add "$mp" &>/dev/null; then
+        log_ok "marketplace $label added"
+      else
+        log_warn "marketplace $label failed (may already exist)"
+      fi
+    fi
+  done
+
+  local current_plugins
+  current_plugins="$("$claude_cmd" plugin list 2>&1 || true)"
+
+  for plugin in "${PLUGINS[@]}"; do
+    local name="${plugin%@*}"
+    if echo "$current_plugins" | grep -q "$plugin" 2>/dev/null; then
+      log_ok "plugin $name (already installed)"
+    else
+      if "$claude_cmd" plugin install "$plugin" &>/dev/null; then
+        log_ok "plugin $name installed"
+      else
+        log_warn "plugin $name failed"
+      fi
+    fi
+  done
+}
+
+# ════════════════════════════════════════════
+# Run
+# ════════════════════════════════════════════
+
+if is_fresh; then
+  fresh_reset
 fi
 
-# Delegate settings install + plugins + powerline to the dedicated setup script.
-# It handles symlink/copy modes itself and also installs settings.local.json.
-SETUP_FLAG="--symlink"
-[[ "${COPY_MODE:-false}" == "true" ]] && SETUP_FLAG="--copy"
+ensure_claude_cli
+install_settings
+install_marketplaces_and_plugins
+ensure_powerline
 
-if [[ "${DRY_RUN:-false}" == "true" ]]; then
-  dry_run "Would run claude-code-setup.sh $SETUP_FLAG"
-elif command -v claude &>/dev/null; then
-  bash "$DOTFILES_DIR/claude-code-setup.sh" "$SETUP_FLAG"
-else
-  log_warn "Claude Code CLI not found. Skipping plugins/powerline install."
-  log_warn "After installing Claude Code, run: bash $DOTFILES_DIR/claude-code-setup.sh $SETUP_FLAG"
+if [[ "$DRY_RUN" != "true" ]] && is_fresh; then
+  echo ""
+  log_info "Restart Claude Code to apply all changes."
 fi
