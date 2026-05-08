@@ -43,3 +43,8 @@ export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
 
 # Dart CLI completion
 [[ -f "$HOME/.dart-cli-completion/zsh-config.zsh" ]] && . "$HOME/.dart-cli-completion/zsh-config.zsh" || true
+
+# Oh-My-Posh prompt
+if command -v oh-my-posh &>/dev/null; then
+    eval "$(oh-my-posh init zsh --config "$HOME/.config/oh-my-posh/theme.omp.json")"
+fi

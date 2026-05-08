@@ -72,7 +72,6 @@ You can combine `-m` flags to install any combination. Use `--dry-run` to previe
 | `claude` | No | Claude Code settings |
 | `ghostty` | No | Ghostty terminal config |
 | `zellij` | No | Zellij multiplexer config |
-| `antigravity` | No | Antigravity (VS Code fork) settings |
 
 ## Local Configuration
 
@@ -165,11 +164,9 @@ dotfiles/
 ├── ghostty/            # Ghostty terminal
 │   └── install.sh
 ├── zellij/             # Zellij multiplexer
-│   └── install.sh
-├── antigravity/        # Antigravity (VS Code fork)
-│   ├── settings.json
-│   ├── keybindings.json
-│   ├── extensions.txt
+│   ├── config.kdl
+│   ├── layouts/
+│   │   └── quiver.kdl
 │   └── install.sh
 ├── bootstrap.sh        # Main modular installer
 ├── install.sh          # One-liner entry point for fresh machines

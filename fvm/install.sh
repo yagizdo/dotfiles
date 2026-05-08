@@ -66,7 +66,6 @@ EOF
 }
 
 setup_editor_fvm "VS Code" "$DOTFILES_DIR/vscode/settings.json"
-setup_editor_fvm "Antigravity" "$DOTFILES_DIR/antigravity/settings.json"
 
 # ════════════════════════════════════════════
 # .gitignore recommendation

@@ -64,6 +64,24 @@
         "source": "github",
         "repo": "yagizdo/quiver"
       }
+    },
+    "every-marketplace": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/kieranklaassen/compound-engineering-plugin.git"
+      }
+    },
+    "xclaude-plugin-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "conorluddy/xclaude-plugin"
+      }
+    },
+    "ui-ux-pro-max-skill": {
+      "source": {
+        "source": "github",
+        "repo": "nextlevelbuilder/ui-ux-pro-max-skill"
+      }
     }
   },
   "language": "Turkish",

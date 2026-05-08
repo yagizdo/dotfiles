@@ -5,6 +5,9 @@
 // Shell
 default_shell "zsh"
 
+// Default layout (loaded from ~/.config/zellij/layouts/quiver.kdl)
+default_layout "quiver"
+
 // Theme
 theme "catppuccin-macchiato"
 

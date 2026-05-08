@@ -39,3 +39,6 @@ Pods/
 *.iml
 .gradle/
 local.properties
+
+# Claude Code (project-local settings should not leak)
+**/.claude/settings.local.json
