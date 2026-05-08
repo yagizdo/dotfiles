@@ -6,9 +6,41 @@
       "Bash(*clear_handovers*)",
       "Bash(mkdir*handover*)",
       "Write(*/.claude/handovers/*.md)",
-      "Edit(*/.claude/handovers/*.md)"
+      "Edit(*/.claude/handovers/*.md)",
+      "mcp__codegraph__codegraph_search",
+      "mcp__codegraph__codegraph_context",
+      "mcp__codegraph__codegraph_callers",
+      "mcp__codegraph__codegraph_callees",
+      "mcp__codegraph__codegraph_impact",
+      "mcp__codegraph__codegraph_node",
+      "mcp__codegraph__codegraph_status"
     ],
-    "defaultMode": "plan"
+    "defaultMode": "auto"
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "codegraph mark-dirty",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "codegraph sync-if-dirty"
+          }
+        ]
+      }
+    ]
   },
   "statusLine": {
     "type": "command",
@@ -16,37 +48,15 @@
   },
   "enabledPlugins": {
     "context7@claude-plugins-official": false,
-    "compound-engineering@every-marketplace": false,
-    "swift-lsp@claude-plugins-official": true,
     "superpowers@claude-plugins-official": true,
-    "xclaude-plugin@xclaude-plugin-marketplace": true,
     "obsidian@obsidian-skills": true,
-    "ui-ux-pro-max@ui-ux-pro-max-skill": true,
     "quiver@quiver": true
   },
   "extraKnownMarketplaces": {
-    "every-marketplace": {
-      "source": {
-        "source": "git",
-        "url": "https://github.com/kieranklaassen/compound-engineering-plugin.git"
-      }
-    },
-    "xclaude-plugin-marketplace": {
-      "source": {
-        "source": "github",
-        "repo": "conorluddy/xclaude-plugin"
-      }
-    },
     "obsidian-skills": {
       "source": {
         "source": "github",
         "repo": "kepano/obsidian-skills"
-      }
-    },
-    "ui-ux-pro-max-skill": {
-      "source": {
-        "source": "github",
-        "repo": "nextlevelbuilder/ui-ux-pro-max-skill"
       }
     },
     "quiver": {
@@ -56,13 +66,16 @@
       }
     }
   },
+  "language": "Turkish",
   "effortLevel": "xhigh",
   "tui": "fullscreen",
   "voice": {
     "enabled": true,
     "mode": "hold"
   },
+  "theme": "dark-ansi",
   "skipAutoPermissionPrompt": true,
   "voiceEnabled": true,
-  "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+  "model": "Opus"
 }
