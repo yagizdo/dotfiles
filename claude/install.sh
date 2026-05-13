@@ -123,7 +123,7 @@ ensure_claude_cli() {
     fi
     if command -v npm &>/dev/null; then
       log_info "Installing Claude Code CLI (npm)..."
-      npm install -g @anthropic-ai/claude-code
+      sudo npm install -g @anthropic-ai/claude-code
       log_ok "Claude Code CLI installed"
     else
       log_warn "npm still not found. Install Node.js first, then re-run."
@@ -147,8 +147,11 @@ ensure_powerline() {
     return 0
   fi
 
+  local sudo_prefix=""
+  if is_linux; then sudo_prefix="sudo"; fi
+
   log_info "Installing @owloops/claude-powerline..."
-  if npm install -g @owloops/claude-powerline &>/dev/null; then
+  if $sudo_prefix npm install -g @owloops/claude-powerline &>/dev/null; then
     log_ok "claude-powerline installed"
   else
     log_warn "claude-powerline install failed — statusline will not render"

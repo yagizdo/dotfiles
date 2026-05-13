@@ -259,10 +259,13 @@ npm_reinstall_global() {
     return 0
   fi
 
+  local sudo_prefix=""
+  if is_linux; then sudo_prefix="sudo"; fi
+
   if npm list -g "$pkg" &>/dev/null; then
     log_fresh "Uninstalling global npm $pkg..."
-    npm uninstall -g "$pkg" || true
+    $sudo_prefix npm uninstall -g "$pkg" || true
   fi
   log_info "Installing global npm $pkg..."
-  npm install -g "$pkg"
+  $sudo_prefix npm install -g "$pkg"
 }
