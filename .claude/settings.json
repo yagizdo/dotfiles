@@ -17,6 +17,7 @@
     ],
     "defaultMode": "auto"
   },
+  "model": "Opus",
   "hooks": {
     "PostToolUse": [
       {
@@ -50,7 +51,8 @@
     "context7@claude-plugins-official": false,
     "superpowers@claude-plugins-official": true,
     "obsidian@obsidian-skills": true,
-    "quiver@quiver": true
+    "quiver@quiver": true,
+    "swift-lsp@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "obsidian-skills": {
@@ -94,6 +96,5 @@
   "theme": "dark-ansi",
   "skipAutoPermissionPrompt": true,
   "voiceEnabled": true,
-  "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
-  "model": "Opus"
+  "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
 }
