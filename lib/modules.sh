@@ -7,13 +7,21 @@
 # Module definitions
 # ════════════════════════════════════════════
 
-CORE_MODULES=(homebrew zsh git)
-ALL_MODULES=(homebrew zsh git oh-my-posh vscode ssh claude ghostty zellij fvm)
+if is_macos; then
+  CORE_MODULES=(macos zsh git)
+  ALL_MODULES=(macos zsh git oh-my-posh ssh claude ghostty zellij)
+else
+  CORE_MODULES=(linux zsh git)
+  ALL_MODULES=(linux zsh git oh-my-posh ssh claude ghostty zellij zed)
+fi
+
+OPTIONAL_MODULES=(vscode fvm)
 
 # Module descriptions via function (Bash 3.2 has no associative arrays)
 module_desc() {
   case "$1" in
-    homebrew)   echo "Homebrew package manager and Brewfile" ;;
+    macos)      echo "macOS base: Homebrew + Brewfile" ;;
+    linux)      echo "Linux base: pacman packages" ;;
     zsh)        echo "ZSH config with Zinit plugins" ;;
     git)        echo "Git config and global gitignore" ;;
     oh-my-posh) echo "Oh My Posh prompt theme" ;;
@@ -23,6 +31,7 @@ module_desc() {
     ghostty)    echo "Ghostty terminal config" ;;
     zellij)     echo "Zellij multiplexer config" ;;
     fvm)        echo "FVM (Flutter Version Management) + editor config" ;;
+    zed)        echo "Zed editor (Linux)" ;;
     *)          echo "" ;;
   esac
 }
@@ -74,6 +83,9 @@ list_modules() {
       fi
     done
     printf "  %-12s %s%s\n" "$mod" "$(module_desc "$mod")" "$label"
+  done
+  for mod in "${OPTIONAL_MODULES[@]}"; do
+    printf "  %-12s %s [optional]\n" "$mod" "$(module_desc "$mod")"
   done
   echo ""
 }

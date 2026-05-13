@@ -79,9 +79,13 @@ fresh_reset() {
     done
   fi
 
-  # Reinstall Claude Code cask
-  if command -v brew &>/dev/null; then
-    brew_reinstall cask "claude-code@latest"
+  # Reinstall Claude Code CLI
+  if is_macos; then
+    if command -v brew &>/dev/null; then
+      brew_reinstall cask "claude-code@latest"
+    fi
+  else
+    npm_reinstall_global "@anthropic-ai/claude-code"
   fi
 
   # Reinstall claude-powerline npm package
@@ -96,18 +100,26 @@ ensure_claude_cli() {
   if [[ -n "$(find_claude_cmd)" ]]; then
     return 0
   fi
+  if dry_run "Would install Claude Code CLI"; then return 0; fi
 
-  if dry_run "Would install claude-code cask via brew"; then
-    return 0
-  fi
-
-  if command -v brew &>/dev/null; then
-    log_info "Installing Claude Code CLI..."
-    brew install --cask claude-code@latest
-    log_ok "Claude Code CLI installed"
+  if is_macos; then
+    if command -v brew &>/dev/null; then
+      log_info "Installing Claude Code CLI (brew)..."
+      brew install --cask claude-code@latest
+      log_ok "Claude Code CLI installed"
+    else
+      log_warn "Homebrew not found. Install Claude Code manually."
+      return 1
+    fi
   else
-    log_warn "Homebrew not found. Install Claude Code manually, then re-run this module."
-    return 1
+    if command -v npm &>/dev/null; then
+      log_info "Installing Claude Code CLI (npm)..."
+      npm install -g @anthropic-ai/claude-code
+      log_ok "Claude Code CLI installed"
+    else
+      log_warn "npm not found. Install Node.js first, then re-run."
+      return 1
+    fi
   fi
 }
 

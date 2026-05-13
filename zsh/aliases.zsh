@@ -1,8 +1,14 @@
 # General
 alias c='clear'
-alias ls='ls -G'
-alias ll='ls -lG'
-alias la='ls -laG'
+if [[ "$(uname -s)" == "Darwin" ]]; then
+  alias ls='ls -G'
+  alias ll='ls -lG'
+  alias la='ls -laG'
+else
+  alias ls='ls --color=auto'
+  alias ll='ls -l --color=auto'
+  alias la='ls -la --color=auto'
+fi
 alias vim='nvim'
 alias reloadshell="exec zsh"
 
@@ -29,6 +35,8 @@ alias gco='git checkout'
 alias gb='git branch'
 alias glog='git log --oneline --graph'
 
-# iOS
-alias pod-install='cd ios && pod install && cd ..'
-alias sim='open -a Simulator'
+# iOS (macOS only)
+if [[ "$(uname -s)" == "Darwin" ]]; then
+  alias pod-install='cd ios && pod install && cd ..'
+  alias sim='open -a Simulator'
+fi

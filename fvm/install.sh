@@ -15,14 +15,20 @@ log_header "FVM (Flutter Version Management)"
 # ════════════════════════════════════════════
 
 if is_fresh; then
-  brew_reinstall formula "leoafarias/fvm/fvm"
-elif ! command -v fvm &>/dev/null; then
-  if dry_run "Would install fvm via Homebrew"; then
-    :
+  if is_macos; then
+    brew_reinstall formula "leoafarias/fvm/fvm"
   else
-    log_info "Installing FVM..."
-    brew install fvm
-    log_ok "FVM installed"
+    log_skip "FVM fresh reinstall not supported on Linux"
+  fi
+elif ! command -v fvm &>/dev/null; then
+  if is_macos; then
+    if dry_run "Would install fvm via Homebrew"; then :; else
+      log_info "Installing FVM..."
+      brew install fvm
+      log_ok "FVM installed"
+    fi
+  else
+    log_warn "FVM not found. Install manually: https://fvm.app/documentation/getting-started/installation"
   fi
 else
   log_ok "FVM already installed ($(fvm --version))"
@@ -51,9 +57,9 @@ setup_editor_fvm() {
         return 0
       fi
       # Remove existing dart.flutterSdkPath line; trailing comma cleanup
-      sed -i '' '/"dart.flutterSdkPath"/d' "$settings_file"
+      sed_inplace '/"dart.flutterSdkPath"/d' "$settings_file"
       # Cleanup dangling commas before closing brace
-      sed -i '' -e ':a' -e '$!{N;ba' -e '}' -e 's/,\s*}/}/g' "$settings_file"
+      sed_inplace -e ':a' -e '$!{N;ba' -e '}' -e 's/,\s*}/}/g' "$settings_file"
       log_fresh "$editor_name: removed dart.flutterSdkPath"
     else
       log_ok "$editor_name: dart.flutterSdkPath already configured"
@@ -72,7 +78,7 @@ setup_editor_fvm() {
   local last_line
   last_line=$(grep -v '^\s*$' "$tmp" | tail -1)
   if [[ "$last_line" != *"," ]] && [[ "$last_line" != *"{" ]]; then
-    sed -i '' '$ s/$/,/' "$tmp"
+    sed_inplace '$ s/$/,/' "$tmp"
   fi
   cat >> "$tmp" <<EOF
   "dart.flutterSdkPath": "$FVM_SDK_PATH"

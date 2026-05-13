@@ -1,4 +1,7 @@
-eval "$(/opt/homebrew/bin/brew shellenv zsh)"
+# Homebrew shell init (macOS only)
+if [[ -f /opt/homebrew/bin/brew ]]; then
+  eval "$(/opt/homebrew/bin/brew shellenv zsh)"
+fi
 
-# Added by swiftly
-. "$HOME/.swiftly/env.sh"
+# Swiftly (if installed)
+[[ -f "$HOME/.swiftly/env.sh" ]] && . "$HOME/.swiftly/env.sh"
