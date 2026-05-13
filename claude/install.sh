@@ -85,6 +85,10 @@ fresh_reset() {
       brew_reinstall cask "claude-code@latest"
     fi
   else
+    if ! command -v npm &>/dev/null; then
+      pacman_install "nodejs"
+      pacman_install "npm"
+    fi
     npm_reinstall_global "@anthropic-ai/claude-code"
   fi
 
@@ -112,12 +116,17 @@ ensure_claude_cli() {
       return 1
     fi
   else
+    if ! command -v npm &>/dev/null; then
+      log_info "npm not found, installing nodejs and npm via pacman..."
+      pacman_install "nodejs"
+      pacman_install "npm"
+    fi
     if command -v npm &>/dev/null; then
       log_info "Installing Claude Code CLI (npm)..."
       npm install -g @anthropic-ai/claude-code
       log_ok "Claude Code CLI installed"
     else
-      log_warn "npm not found. Install Node.js first, then re-run."
+      log_warn "npm still not found. Install Node.js first, then re-run."
       return 1
     fi
   fi
