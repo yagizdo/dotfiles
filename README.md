@@ -1,6 +1,6 @@
 # Dotfiles
 
-Personal dotfiles for Flutter / mobile development on macOS.
+Personal dotfiles for macOS and Linux (Arch).
 
 Two modes for everything:
 
@@ -29,7 +29,7 @@ cd ~/.dotfiles
 ./setup                          # show help
 ./setup --all                    # sync everything (default mode)
 ./setup --all --fresh            # nuke + reinstall everything
-./setup --core                   # sync core: homebrew, zsh, git
+./setup --core                   # sync core: base packages, zsh, git
 ./setup claude                   # sync only Claude Code
 ./setup claude --fresh           # nuke + reinstall Claude Code (plugins, settings, powerline)
 ./setup zsh vscode               # sync multiple modules
@@ -44,7 +44,7 @@ You can pass module names as positional args (`./setup claude`) or with `-m` (`.
 |------|--------------|
 | `-m, --module <name>` | Install a specific module (repeatable) |
 | `-a, --all` | Install all modules |
-| `--core` | Install core modules only (homebrew, zsh, git) |
+| `--core` | Install core modules only |
 | `-F, --fresh` | Fresh install: remove existing configs and reinstall programs |
 | `-n, --dry-run` | Show what would happen without making changes |
 | `-v, --verbose` | Verbose output |
@@ -54,20 +54,32 @@ You can pass module names as positional args (`./setup claude`) or with `-m` (`.
 
 ### Modules
 
-| Module | Core? | What sync does | What `--fresh` adds on top |
-|--------|-------|----------------|------------------------------|
-| `homebrew` | ✓ | Install Homebrew, run Brewfile | `brew bundle cleanup --force` then reinstall everything |
-| `zsh` | ✓ | Link `.zshrc`/`.zprofile`, install Zinit | Remove old configs, delete Zinit, reinstall |
-| `git` | ✓ | Link `.gitconfig`, `.gitignore_global` | Remove existing symlinks (preserves `.gitconfig.local`) |
-| `claude` | | Settings, marketplaces, plugins, powerline | Uninstall all plugins, remove marketplaces, reinstall Claude CLI cask + powerline |
-| `oh-my-posh` | | Link prompt theme | brew reinstall oh-my-posh |
-| `vscode` | | Link `settings.json`, install extensions | Uninstall all extensions, reinstall from `extensions.txt` |
-| `ssh` | | Interactive key setup if missing | SSH keys are NOT auto-deleted (manual step required) |
-| `ghostty` | | Link Ghostty config | Remove config symlink |
-| `zellij` | | Link Zellij config + layouts | Remove config symlinks |
-| `fvm` | | Install FVM, configure editor SDK path | brew reinstall fvm, reset editor SDK setting |
+| Module | Core? | Platform | What sync does | What `--fresh` adds on top |
+|--------|-------|----------|----------------|------------------------------|
+| `macos` | ✓ | macOS | Install Homebrew, run Brewfile | `brew bundle cleanup --force` then reinstall everything |
+| `linux` | ✓ | Linux | Install base packages via pacman | Reinstall all base packages |
+| `zsh` | ✓ | both | Link `.zshrc`/`.zprofile`, install Zinit | Remove old configs, delete Zinit, reinstall |
+| `fish` | | both | Link `config.fish` with Oh My Posh | Reinstall fish shell |
+| `git` | ✓ | both | Link `.gitconfig`, `.gitignore_global` | Remove existing symlinks (preserves `.gitconfig.local`) |
+| `oh-my-posh` | | both | Link prompt theme (Catppuccin Macchiato) | brew/curl reinstall oh-my-posh |
+| `claude` | | both | Settings, marketplaces, plugins, powerline | Uninstall all plugins, remove marketplaces, reinstall |
+| `vscode` | | both | Link `settings.json`, install extensions | Uninstall all extensions, reinstall from `extensions.txt` |
+| `ssh` | | both | Interactive key setup if missing | SSH keys are NOT auto-deleted (manual step required) |
+| `ghostty` | | both | Link Ghostty config | Remove config symlink |
+| `zellij` | | both | Link Zellij config + layouts | Remove config symlinks |
+| `zed` | | Linux | Link Zed settings | Remove config symlink |
+| `fvm` | | both | Install FVM, configure editor SDK path | brew reinstall fvm, reset editor SDK setting |
 
 `--fresh` always prompts for confirmation in interactive shells. Backups go to `~/.dotfiles-backup/<timestamp>/`.
+
+### Shell architecture
+
+```
+Ghostty → Zellij (command = zellij) → fish panes (oh-my-posh catppuccin macchiato)
+Alacritty → fish → auto-starts Zellij → fish panes
+```
+
+Both macOS and Linux use fish as the primary shell inside Zellij. The zsh config is kept for compatibility and direct terminal use.
 
 ## Local configuration
 
@@ -101,9 +113,13 @@ Kept out of the repo via `~/.gitconfig.local`:
 Then add the public key to GitHub:
 
 ```bash
+# macOS
 pbcopy < ~/.ssh/id_ed25519.pub
-# https://github.com/settings/ssh/new
+# Linux
+wl-copy < ~/.ssh/id_ed25519.pub
 ```
+
+Visit https://github.com/settings/ssh/new
 
 ## File structure
 
@@ -114,15 +130,18 @@ dotfiles/
 ├── lib/
 │   ├── helpers.sh       # link_file, log_*, fresh helpers
 │   └── modules.sh       # Module registry
-├── homebrew/install.sh
+├── macos/install.sh
+├── linux/install.sh
 ├── zsh/install.sh
+├── fish/install.sh
 ├── git/install.sh
-├── claude/install.sh    # Settings + plugins + marketplaces + powerline
+├── claude/install.sh
 ├── oh-my-posh/install.sh
 ├── vscode/install.sh
 ├── ssh/install.sh
 ├── ghostty/install.sh
 ├── zellij/install.sh
+├── zed/install.sh
 └── fvm/install.sh
 ```
 
@@ -133,6 +152,8 @@ cd ~/.dotfiles
 git pull
 ./setup --all          # sync mode — picks up any new configs
 ```
+
+Symlinked configs (ghostty, zellij, oh-my-posh theme) update automatically after `git pull`. New modules (like `fish`) need a one-time `./setup -m fish` to create the symlink.
 
 ## Troubleshooting
 
