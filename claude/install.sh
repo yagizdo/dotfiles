@@ -44,8 +44,9 @@ PLUGINS=(
 
 find_claude_cmd() {
   if command -v claude &>/dev/null; then echo "claude"; return; fi
-  [[ -x /usr/local/bin/claude ]] && { echo /usr/local/bin/claude; return; }
+  [[ -x "$HOME/.claude/bin/claude" ]] && { echo "$HOME/.claude/bin/claude"; return; }
   [[ -x "$HOME/.local/bin/claude" ]] && { echo "$HOME/.local/bin/claude"; return; }
+  [[ -x /usr/local/bin/claude ]] && { echo /usr/local/bin/claude; return; }
   echo ""
 }
 
@@ -85,11 +86,7 @@ fresh_reset() {
       brew_reinstall cask "claude-code@latest"
     fi
   else
-    if ! command -v npm &>/dev/null; then
-      pacman_install "nodejs"
-      pacman_install "npm"
-    fi
-    npm_reinstall_global "@anthropic-ai/claude-code"
+    install_claude_native
   fi
 
   # Reinstall claude-powerline npm package
@@ -99,6 +96,44 @@ fresh_reset() {
 # ════════════════════════════════════════════
 # Sync: install settings, marketplaces, plugins
 # ════════════════════════════════════════════
+
+install_claude_native() {
+  if ! command -v npm &>/dev/null; then
+    log_info "npm not found, installing nodejs and npm via pacman..."
+    pacman_install "nodejs"
+    pacman_install "npm"
+  fi
+
+  # Bootstrap via npm if claude is not available at all
+  if [[ -z "$(find_claude_cmd)" ]]; then
+    if command -v npm &>/dev/null; then
+      log_info "Bootstrapping Claude Code via npm..."
+      sudo npm install -g @anthropic-ai/claude-code
+    else
+      log_warn "npm still not found. Install Node.js first, then re-run."
+      return 1
+    fi
+  fi
+
+  local claude_cmd
+  claude_cmd="$(find_claude_cmd)"
+  if [[ -z "$claude_cmd" ]]; then
+    log_warn "Claude CLI not available after bootstrap."
+    return 1
+  fi
+
+  log_info "Installing Claude Code native build..."
+  if "$claude_cmd" install --force; then
+    log_ok "Claude Code native build installed"
+    # Remove npm version if native install succeeded
+    if npm list -g @anthropic-ai/claude-code &>/dev/null 2>&1; then
+      log_info "Removing npm bootstrap package..."
+      sudo npm uninstall -g @anthropic-ai/claude-code || true
+    fi
+  else
+    log_warn "Native install failed — keeping npm version"
+  fi
+}
 
 ensure_claude_cli() {
   if [[ -n "$(find_claude_cmd)" ]]; then
@@ -116,19 +151,7 @@ ensure_claude_cli() {
       return 1
     fi
   else
-    if ! command -v npm &>/dev/null; then
-      log_info "npm not found, installing nodejs and npm via pacman..."
-      pacman_install "nodejs"
-      pacman_install "npm"
-    fi
-    if command -v npm &>/dev/null; then
-      log_info "Installing Claude Code CLI (npm)..."
-      sudo npm install -g @anthropic-ai/claude-code
-      log_ok "Claude Code CLI installed"
-    else
-      log_warn "npm still not found. Install Node.js first, then re-run."
-      return 1
-    fi
+    install_claude_native
   fi
 }
 
