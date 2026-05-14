@@ -13,7 +13,7 @@ keybinds {
 }
 
 // Shell
-default_shell "zsh"
+default_shell "fish"
 
 // Default layout (loaded from ~/.config/zellij/layouts/quiver.kdl)
 default_layout "quiver"
