@@ -37,7 +37,10 @@ export PATH="$HOME/fvm/default/bin:$PATH"
 export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
 export PATH="$HOME/.shorebird/bin:$PATH"
 export PATH="$PATH:$HOME/.pub-cache/bin"
-export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
+
+if [[ "$(uname -s)" == "Darwin" ]]; then
+  export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
+fi
 
 # ── Tool Integrations ──
 

@@ -182,7 +182,11 @@ if is_fresh && [[ "$DRY_RUN" != "true" ]]; then
   log_header "Fresh Install"
   log_warn "Fresh mode will:"
   echo "  • Remove existing configs/symlinks for: ${RESOLVED_MODULES[*]}"
-  echo "  • Uninstall and reinstall associated programs (brew/npm packages)"
+  if is_macos; then
+    echo "  • Uninstall and reinstall associated programs (brew/npm packages)"
+  else
+    echo "  • Uninstall and reinstall associated programs (pacman/npm packages)"
+  fi
   echo "  • Reset plugins, marketplaces, and editor settings"
   echo ""
   log_warn "Backups go to: $BACKUP_DIR"

@@ -6,7 +6,7 @@ REPO_ROOT="$(git rev-parse --show-toplevel)"
 
 # ── Brewfile ────────────────────────────────────────────────
 if command -v brew &>/dev/null; then
-  BREWFILE="$REPO_ROOT/homebrew/Brewfile"
+  BREWFILE="$REPO_ROOT/macos/Brewfile"
   brew bundle dump --file="$BREWFILE" --force >/dev/null
   if ! git diff --quiet -- "$BREWFILE"; then
     git add "$BREWFILE"

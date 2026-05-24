@@ -1,5 +1,5 @@
 #!/bin/bash
-# Module: homebrew — Install Homebrew and run Brewfile
+# Module: macos — Install Homebrew and run Brewfile
 #
 # fresh: runs `brew bundle --cleanup` to remove anything not in our Brewfile
 #        before reinstalling. Homebrew itself is preserved (too disruptive
@@ -9,7 +9,10 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/lib/helpers.sh"
 
 log_header "Homebrew"
 
-OS="$(uname -s)"
+if is_linux; then
+  log_skip "macOS module — skipping on Linux"
+  exit 0
+fi
 
 # Install Homebrew if missing
 if ! command -v brew &>/dev/null; then
@@ -18,11 +21,7 @@ if ! command -v brew &>/dev/null; then
   else
     log_info "Installing Homebrew..."
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    if [[ "$OS" == "Darwin" ]]; then
-      eval "$(/opt/homebrew/bin/brew shellenv)"
-    else
-      eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-    fi
+    eval "$(/opt/homebrew/bin/brew shellenv)"
     log_ok "Homebrew installed"
   fi
 else
@@ -35,18 +34,18 @@ if is_fresh; then
     :
   else
     log_fresh "Removing packages not in Brewfile..."
-    brew bundle cleanup --force --file="$DOTFILES_DIR/homebrew/Brewfile" || true
+    brew bundle cleanup --force --file="$DOTFILES_DIR/macos/Brewfile" || true
     log_fresh "Reinstalling packages from Brewfile..."
-    brew bundle --force --file="$DOTFILES_DIR/homebrew/Brewfile"
+    brew bundle --force --file="$DOTFILES_DIR/macos/Brewfile"
     log_ok "Brewfile reinstalled"
   fi
 else
-  if dry_run "Would run brew bundle with $DOTFILES_DIR/homebrew/Brewfile"; then
+  if dry_run "Would run brew bundle with $DOTFILES_DIR/macos/Brewfile"; then
     :
   else
     log_info "Installing packages from Brewfile..."
     brew update
-    brew bundle --file="$DOTFILES_DIR/homebrew/Brewfile"
+    brew bundle --file="$DOTFILES_DIR/macos/Brewfile"
     log_ok "Brewfile packages installed"
   fi
 fi

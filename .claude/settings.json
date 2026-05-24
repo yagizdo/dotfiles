@@ -52,7 +52,9 @@
     "superpowers@claude-plugins-official": true,
     "obsidian@obsidian-skills": true,
     "quiver@quiver": true,
-    "swift-lsp@claude-plugins-official": true
+    "swift-lsp@claude-plugins-official": true,
+    "ui-ux-pro-max@ui-ux-pro-max-skill": true,
+    "xclaude-plugin@xclaude-plugin-marketplace": true
   },
   "extraKnownMarketplaces": {
     "obsidian-skills": {
@@ -83,6 +85,18 @@
       "source": {
         "source": "github",
         "repo": "nextlevelbuilder/ui-ux-pro-max-skill"
+      }
+    },
+    "claude-plugins-official": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-plugins-official"
+      }
+    },
+    "compound-engineering-plugin": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/kieranklaassen/compound-engineering-plugin.git"
       }
     }
   },

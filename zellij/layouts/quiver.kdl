@@ -1,26 +1,14 @@
 layout {
-    cwd "/Users/yagizdo"
     tab name="Tab #1" focus=true hide_floating_panes=true {
         pane size=1 borderless=true {
             plugin location="zellij:tab-bar"
         }
         pane split_direction="vertical" {
-            pane cwd="Personal Docs/Project-Docs/quiver-plugin" size="50%"
-            pane command="claude" cwd="Projects/ai-tools/quiver-plugin" focus=true size="50%" {
-                args "--plugin-dir" "/Users/yagizdo/Projects/ai-tools/quiver-plugin"
-                start_suspended true
-            }
+            pane size="50%"
+            pane focus=true size="50%"
         }
         pane size=1 borderless=true {
             plugin location="zellij:status-bar"
-        }
-        floating_panes {
-            pane {
-                height 25
-                width 155
-                x 78
-                y 14
-            }
         }
     }
     tab name="Tab #2" hide_floating_panes=true {

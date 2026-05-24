@@ -44,8 +44,9 @@ PLUGINS=(
 
 find_claude_cmd() {
   if command -v claude &>/dev/null; then echo "claude"; return; fi
-  [[ -x /usr/local/bin/claude ]] && { echo /usr/local/bin/claude; return; }
+  [[ -x "$HOME/.claude/bin/claude" ]] && { echo "$HOME/.claude/bin/claude"; return; }
   [[ -x "$HOME/.local/bin/claude" ]] && { echo "$HOME/.local/bin/claude"; return; }
+  [[ -x /usr/local/bin/claude ]] && { echo /usr/local/bin/claude; return; }
   echo ""
 }
 
@@ -79,9 +80,13 @@ fresh_reset() {
     done
   fi
 
-  # Reinstall Claude Code cask
-  if command -v brew &>/dev/null; then
-    brew_reinstall cask "claude-code@latest"
+  # Reinstall Claude Code CLI
+  if is_macos; then
+    if command -v brew &>/dev/null; then
+      brew_reinstall cask "claude-code@latest"
+    fi
+  else
+    install_claude_native
   fi
 
   # Reinstall claude-powerline npm package
@@ -92,22 +97,61 @@ fresh_reset() {
 # Sync: install settings, marketplaces, plugins
 # ════════════════════════════════════════════
 
+install_claude_native() {
+  if ! command -v npm &>/dev/null; then
+    log_info "npm not found, installing nodejs and npm via pacman..."
+    pacman_install "nodejs"
+    pacman_install "npm"
+  fi
+
+  # Bootstrap via npm if claude is not available at all
+  if [[ -z "$(find_claude_cmd)" ]]; then
+    if command -v npm &>/dev/null; then
+      log_info "Bootstrapping Claude Code via npm..."
+      sudo npm install -g @anthropic-ai/claude-code
+    else
+      log_warn "npm still not found. Install Node.js first, then re-run."
+      return 1
+    fi
+  fi
+
+  local claude_cmd
+  claude_cmd="$(find_claude_cmd)"
+  if [[ -z "$claude_cmd" ]]; then
+    log_warn "Claude CLI not available after bootstrap."
+    return 1
+  fi
+
+  log_info "Installing Claude Code native build..."
+  if "$claude_cmd" install --force; then
+    log_ok "Claude Code native build installed"
+    # Remove npm version if native install succeeded
+    if npm list -g @anthropic-ai/claude-code &>/dev/null 2>&1; then
+      log_info "Removing npm bootstrap package..."
+      sudo npm uninstall -g @anthropic-ai/claude-code || true
+    fi
+  else
+    log_warn "Native install failed — keeping npm version"
+  fi
+}
+
 ensure_claude_cli() {
   if [[ -n "$(find_claude_cmd)" ]]; then
     return 0
   fi
+  if dry_run "Would install Claude Code CLI"; then return 0; fi
 
-  if dry_run "Would install claude-code cask via brew"; then
-    return 0
-  fi
-
-  if command -v brew &>/dev/null; then
-    log_info "Installing Claude Code CLI..."
-    brew install --cask claude-code@latest
-    log_ok "Claude Code CLI installed"
+  if is_macos; then
+    if command -v brew &>/dev/null; then
+      log_info "Installing Claude Code CLI (brew)..."
+      brew install --cask claude-code@latest
+      log_ok "Claude Code CLI installed"
+    else
+      log_warn "Homebrew not found. Install Claude Code manually."
+      return 1
+    fi
   else
-    log_warn "Homebrew not found. Install Claude Code manually, then re-run this module."
-    return 1
+    install_claude_native
   fi
 }
 
@@ -126,8 +170,11 @@ ensure_powerline() {
     return 0
   fi
 
+  local sudo_prefix=""
+  if is_linux; then sudo_prefix="sudo"; fi
+
   log_info "Installing @owloops/claude-powerline..."
-  if npm install -g @owloops/claude-powerline &>/dev/null; then
+  if $sudo_prefix npm install -g @owloops/claude-powerline &>/dev/null; then
     log_ok "claude-powerline installed"
   else
     log_warn "claude-powerline install failed — statusline will not render"

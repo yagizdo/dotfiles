@@ -30,3 +30,21 @@ else
   log_info "Running SSH key setup..."
   bash "$DOTFILES_DIR/ssh/ssh.sh" "${1:-}"
 fi
+
+# SSH config
+if [[ -f "$DOTFILES_DIR/ssh/config" ]]; then
+  link_file "$DOTFILES_DIR/ssh/config" "$HOME/.ssh/config"
+fi
+
+# Enable persistent ssh-agent via systemd on Linux
+if is_linux; then
+  if systemctl --user is-active ssh-agent.socket &>/dev/null; then
+    log_ok "ssh-agent.socket already active"
+  else
+    if dry_run "Would enable ssh-agent.socket"; then :; else
+      log_info "Enabling ssh-agent.socket..."
+      systemctl --user enable --now ssh-agent.socket
+      log_ok "ssh-agent.socket enabled"
+    fi
+  fi
+fi

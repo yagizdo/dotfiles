@@ -1,9 +1,11 @@
 shell-integration = fish
-command = /opt/homebrew/bin/fish
+command = /usr/local/bin/zellij
 
 mouse-scroll-multiplier = 0.5
 
 window-decoration = true
+window-width = 176
+window-height = 47
 window-padding-x = 8
 window-padding-y = 8
 

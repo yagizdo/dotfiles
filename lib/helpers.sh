@@ -57,6 +57,28 @@ FORCE="${FORCE:-false}"
 COPY_MODE="${COPY_MODE:-false}"
 FRESH="${FRESH:-false}"
 
+# ════════════════════════════════════════════
+# OS detection (evaluated once at source time)
+# ════════════════════════════════════════════
+
+OS_KERNEL="$(uname -s)"
+OS_DISTRO=""
+if [[ "$OS_KERNEL" == "Linux" ]] && [[ -f /etc/os-release ]]; then
+  OS_DISTRO="$(. /etc/os-release && echo "$ID")"
+fi
+export OS_KERNEL OS_DISTRO
+
+is_macos() { [[ "$OS_KERNEL" == "Darwin" ]]; }
+is_linux() { [[ "$OS_KERNEL" == "Linux" ]]; }
+
+sed_inplace() {
+  if is_macos; then
+    sed -i '' "$@"
+  else
+    sed -i "$@"
+  fi
+}
+
 dry_run() {
   if [[ "$DRY_RUN" == "true" ]]; then
     printf '%b[DRY-RUN]%b %s\n' "$YELLOW" "$NC" "$*"
@@ -195,6 +217,36 @@ brew_reinstall() {
   esac
 }
 
+# ════════════════════════════════════════════
+# Pacman helpers (Linux)
+# ════════════════════════════════════════════
+
+pacman_install() {
+  local pkg="$1"
+  if ! command -v pacman &>/dev/null; then
+    log_warn "pacman not found, cannot install $pkg"
+    return 0
+  fi
+  if dry_run "Would pacman install $pkg"; then return 0; fi
+  if pacman -Qi "$pkg" &>/dev/null; then
+    log_ok "$pkg already installed"
+    return 0
+  fi
+  log_info "Installing $pkg..."
+  sudo pacman -S --needed --noconfirm "$pkg"
+}
+
+pacman_reinstall() {
+  local pkg="$1"
+  if ! command -v pacman &>/dev/null; then
+    log_warn "pacman not found, cannot reinstall $pkg"
+    return 0
+  fi
+  if dry_run "Would reinstall $pkg via pacman"; then return 0; fi
+  log_fresh "Reinstalling $pkg..."
+  sudo pacman -S --noconfirm "$pkg"
+}
+
 # npm_reinstall_global — uninstall+reinstall a global npm package
 npm_reinstall_global() {
   local pkg="$1"
@@ -207,10 +259,13 @@ npm_reinstall_global() {
     return 0
   fi
 
+  local sudo_prefix=""
+  if is_linux; then sudo_prefix="sudo"; fi
+
   if npm list -g "$pkg" &>/dev/null; then
     log_fresh "Uninstalling global npm $pkg..."
-    npm uninstall -g "$pkg" || true
+    $sudo_prefix npm uninstall -g "$pkg" || true
   fi
   log_info "Installing global npm $pkg..."
-  npm install -g "$pkg"
+  $sudo_prefix npm install -g "$pkg"
 }
