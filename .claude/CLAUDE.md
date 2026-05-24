@@ -1,5 +1,9 @@
 # Global Settings
 
+## Writing Rules
+
+- NEVER produce AI slop. No em dash lists ("X — Y, Z & more"), no buzzwords (delve, leverage, robust, seamless, comprehensive, innovative, transformative, tapestry, landscape, realm, foster, embark, testament, underscore, pivotal, cutting-edge, groundbreaking, harness, streamline, navigate-as-metaphor, synergy, empower, craft-as-verb), no filler triplets, no "not just X but Y", no throat-clearing ("it's worth noting", "in today's fast-paced world"), no weasel words, no marketing superlatives. Write short, specific, factual text. If you can't say something concrete, don't say it.
+
 ## Git Rules
 
 - Always ask for confirmation before `git commit` and `git push`

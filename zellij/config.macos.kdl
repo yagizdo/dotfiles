@@ -1,4 +1,4 @@
-// Zellij config
+// Zellij config (macOS)
 // Ctrl+g → locked, Ctrl+p → pane, Ctrl+t → tab, Ctrl+n → resize,
 // Ctrl+s → scroll, Alt+s → session, Ctrl+h → move
 
@@ -12,11 +12,11 @@ keybinds {
     }
 }
 
-// Shell
-default_shell "fish"
+// Shell (full path required — Ghostty launches with minimal PATH)
+default_shell "/opt/homebrew/bin/fish"
 
-// Default layout (loaded from ~/.config/zellij/layouts/quiver.kdl)
-default_layout "quiver"
+// Default layout
+default_layout "default"
 
 // Theme
 theme "catppuccin-macchiato"

@@ -29,5 +29,9 @@ if ! command -v zellij &>/dev/null && ! is_fresh; then
 fi
 
 mkdir -p "$HOME/.config/zellij/layouts"
-link_file "$DOTFILES_DIR/zellij/config.kdl" "$HOME/.config/zellij/config.kdl"
+if is_macos; then
+  link_file "$DOTFILES_DIR/zellij/config.macos.kdl" "$HOME/.config/zellij/config.kdl"
+else
+  link_file "$DOTFILES_DIR/zellij/config.linux.kdl" "$HOME/.config/zellij/config.kdl"
+fi
 link_file "$DOTFILES_DIR/zellij/layouts/quiver.kdl" "$HOME/.config/zellij/layouts/quiver.kdl"

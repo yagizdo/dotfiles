@@ -34,4 +34,8 @@ if ! command -v ghostty &>/dev/null && ! is_fresh; then
 fi
 
 mkdir -p "$GHOSTTY_DIR"
-link_file "$DOTFILES_DIR/ghostty/config" "$GHOSTTY_DIR/config"
+if is_macos; then
+  link_file "$DOTFILES_DIR/ghostty/config.macos" "$GHOSTTY_DIR/config"
+else
+  link_file "$DOTFILES_DIR/ghostty/config.linux" "$GHOSTTY_DIR/config"
+fi
