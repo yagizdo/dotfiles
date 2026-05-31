@@ -10,6 +10,7 @@
   // ==============================
   // Base / UI
   // ==============================
+  "cli_default_open_behavior": "existing_window",
   "vim_mode": false,
   "base_keymap": "JetBrains",
   "ui_font_size": 16,
