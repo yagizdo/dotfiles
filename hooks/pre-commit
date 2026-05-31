@@ -1,18 +1,8 @@
 #!/bin/bash
-# Auto-dump Brewfile and sync Claude configs before commit so repo mirrors reality.
+# Sync Claude configs before commit so repo mirrors reality.
 set -eo pipefail
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"
-
-# ── Brewfile ────────────────────────────────────────────────
-if command -v brew &>/dev/null; then
-  BREWFILE="$REPO_ROOT/macos/Brewfile"
-  brew bundle dump --file="$BREWFILE" --force >/dev/null
-  if ! git diff --quiet -- "$BREWFILE"; then
-    git add "$BREWFILE"
-    echo "[pre-commit] Brewfile updated and staged"
-  fi
-fi
 
 # ── Claude configs ──────────────────────────────────────────
 # If a tracked Claude config in ~/.claude/ is a regular file (symlink broken),

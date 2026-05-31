@@ -11,13 +11,14 @@ The new `setup` + `--fresh` flow needs a clean-machine pass before it can be tru
 
 ## Test Linux-specific configs
 
-Ghostty, zellij and fish configs were split into per-platform files (2026-05-24). macOS side is verified, Linux is untested:
+Ghostty, zellij and fish configs were split into per-platform files (2026-05-24). macOS side is verified.
 
-- [ ] `ghostty/config.linux`: `command = zellij` — is zellij in PATH? Use full path if not
+- [x] `ghostty/config.linux`: `command = zellij` — zellij at `/usr/bin/zellij`, in PATH
 - [ ] `ghostty/config.linux`: verify `ctrl+` keybindings work correctly
-- [ ] `zellij/config.linux.kdl`: `default_shell "fish"` — is fish in PATH?
-- [ ] `fish/config.fish`: PATH additions are no-ops on Linux — verify no side effects
+- [x] `zellij/config.linux.kdl`: `default_shell "fish"` — fish at `/usr/bin/fish`, in PATH
+- [x] `fish/config.fish`: PATH additions are no-ops on Linux — verified, guarded with `test -d`
 - [ ] Full chain Ghostty → zellij → fish opens without errors
+- [x] Zed: `Google Sans Code` font installed from GitHub releases (v7.000, OFL license)
 
 ## Known limitations
 

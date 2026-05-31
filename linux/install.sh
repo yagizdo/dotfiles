@@ -19,6 +19,7 @@ PACKAGES=(
   neovim
   shellcheck
   github-cli
+  scrcpy
   unzip
 )
 

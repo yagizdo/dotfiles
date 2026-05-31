@@ -23,10 +23,12 @@ fi
 # ════════════════════════════════════════════
 
 if is_linux && ! is_fresh; then
-  if ! command -v zed &>/dev/null; then
+  if ! command -v zeditor &>/dev/null && ! command -v zed &>/dev/null; then
     pacman_install "zed"
   else
-    log_ok "Zed already installed ($(zed --version 2>/dev/null | head -1))"
+    zed_cmd="zeditor"
+    command -v zeditor &>/dev/null || zed_cmd="zed"
+    log_ok "Zed already installed ($($zed_cmd --version 2>/dev/null | head -1))"
   fi
 fi
 
