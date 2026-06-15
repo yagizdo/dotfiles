@@ -51,3 +51,9 @@ fi
 if command -v oh-my-posh &>/dev/null; then
     eval "$(oh-my-posh init zsh --config "$HOME/.config/oh-my-posh/theme.omp.json")"
 fi
+
+# LM Studio CLI (lms)
+if [[ "$(uname -s)" == "Linux" ]]; then
+  export PATH="$PATH:$HOME/.lmstudio/bin"
+fi
+

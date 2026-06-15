@@ -28,3 +28,9 @@ if status is-interactive
         eval (zellij setup --generate-auto-start fish | string collect)
     end
 end
+
+# LM Studio CLI (lms)
+if test (uname -s) = Linux
+    set -gx PATH $PATH $HOME/.lmstudio/bin
+end
+
