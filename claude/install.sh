@@ -26,6 +26,7 @@ MARKETPLACES=(
   "kepano/obsidian-skills"
   "nextlevelbuilder/ui-ux-pro-max-skill"
   "yagizdo/quiver"
+  "JuliusBrussee/caveman"
 )
 
 PLUGINS=(
@@ -36,6 +37,7 @@ PLUGINS=(
   "ui-ux-pro-max@ui-ux-pro-max-skill"
   "xclaude-plugin@xclaude-plugin-marketplace"
   "quiver@quiver"
+  "caveman@caveman"
 )
 
 # ════════════════════════════════════════════
