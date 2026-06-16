@@ -16,6 +16,16 @@ if test -d ~/.local/bin
     fish_add_path ~/.local/bin
 end
 
+# Flutter via FVM (default version symlink) + pub global executables (macOS only)
+if test (uname -s) = Darwin
+    if test -d ~/fvm/default/bin
+        fish_add_path ~/fvm/default/bin
+    end
+    if test -d ~/.pub-cache/bin
+        fish_add_path ~/.pub-cache/bin
+    end
+end
+
 if status is-interactive
     # Oh My Posh prompt
     if type -q oh-my-posh

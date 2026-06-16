@@ -17,7 +17,7 @@
     ],
     "defaultMode": "auto"
   },
-  "model": "Opus",
+  "model": "sonnet",
   "hooks": {
     "PostToolUse": [
       {
@@ -41,7 +41,34 @@
           }
         ]
       }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"/opt/homebrew/Cellar/node/25.9.0_1/bin/node\" \"/Users/yagizdo/.claude/hooks/caveman-activate.js\"",
+            "timeout": 5,
+            "statusMessage": "Loading caveman mode..."
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"/opt/homebrew/Cellar/node/25.9.0_1/bin/node\" \"/Users/yagizdo/.claude/hooks/caveman-mode-tracker.js\"",
+            "timeout": 5,
+            "statusMessage": "Tracking caveman mode..."
+          }
+        ]
+      }
     ]
+  },
+  "worktree": {
+    "baseRef": "fresh"
   },
   "statusLine": {
     "type": "command",
@@ -54,7 +81,8 @@
     "quiver@quiver": true,
     "swift-lsp@claude-plugins-official": true,
     "ui-ux-pro-max@ui-ux-pro-max-skill": true,
-    "xclaude-plugin@xclaude-plugin-marketplace": true
+    "xclaude-plugin@xclaude-plugin-marketplace": true,
+    "caveman@caveman": true
   },
   "extraKnownMarketplaces": {
     "obsidian-skills": {
@@ -98,6 +126,12 @@
         "source": "git",
         "url": "https://github.com/kieranklaassen/compound-engineering-plugin.git"
       }
+    },
+    "caveman": {
+      "source": {
+        "source": "github",
+        "repo": "JuliusBrussee/caveman"
+      }
     }
   },
   "language": "Turkish",
@@ -108,6 +142,7 @@
     "mode": "hold"
   },
   "theme": "dark-ansi",
+  "autoCompactEnabled": true,
   "skipAutoPermissionPrompt": true,
   "voiceEnabled": true,
   "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
