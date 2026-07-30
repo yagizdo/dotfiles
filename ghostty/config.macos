@@ -1,5 +1,5 @@
 shell-integration = fish
-command = /usr/local/bin/zellij
+command = /opt/homebrew/bin/zellij
 
 mouse-scroll-multiplier = 0.5
 
